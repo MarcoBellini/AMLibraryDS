@@ -128,7 +128,7 @@ Public Class AMPlayer
         Dim nFileSize As Integer
         Dim FileInformations As IO.FileInfo
 
-        Results = SafeDialog.OpenMultipleFiles("Supported Files |" & Decoder.GetSupportedExtension)
+        Results = SafeDialog.OpenMultipleFiles("Supported Files|" & Decoder.GetSupportedExtension)
 
         If Results IsNot Nothing Then
 
