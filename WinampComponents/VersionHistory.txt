@@ -1,0 +1,29 @@
+﻿
+Version 1.3
+------------
+BUGFIX: Fixed missing implementation of TickAlignment property (Stupid me!)
+BUGFIX: Fixed pixel error in GetTickLayoutRectangle method of both renderers
+
+Version 1.2
+------------
+NEW: Ticks ScaleType implementation
+NEW Built-in ToolTip with possibility to set tooltip for the entire control or only the slider button
+NEW: ScaleType property. Can be None, ScaleFields or Ticks
+NEW: ScalePosition property renamed to ScaleFieldPosition for consistency (OBS: This change breaks compatibility with previous versions)
+NEW: WinampTrackBarScalePosition enumeration renamed to WinampTrackBarScaleFieldPosition for consistency (OBS: This change breaks compatibility with previous versions)
+NEW: ScalePosition = Hidden option removed. Use ScaleType = None instead (OBS: This change breaks compatibility with previous versions)
+CHANGE: Change in the way the different layout rectangles are calculated in order to keep the scale fields or ticks near the track even if the control is bigger
+BUGFIX: Check for out of bounds Value Property values
+
+Version 1.1
+------------
+NEW: SeekDone event
+NEW: SliderButtonDoubleClick event
+NEW: ValueChanging event, including the possility of cancelling the change
+NEW: The EventArgs in the ValueChanged event now gives information about how and why the value was changed (OBS: This change breaks compatibility with previous versions)
+BUGFIX: Fixed minor calculation errors in Trackbar renderers
+ADDED: Unit Tests for ValueToPixelValue and PixelValueToValue method in renderers to avoid more bugs like the one above
+
+Version 1.0
+------------
+Initial Release

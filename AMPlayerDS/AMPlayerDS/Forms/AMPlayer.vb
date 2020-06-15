@@ -1,5 +1,5 @@
-Imports System.Threading
-
+' Winamp style trackbar source code:
+' https://www.codeproject.com/Articles/997101/Custom-Winamp-Style-TrackBar-Slider
 Public Class AMPlayer
     Private Const INVALID_INDEX As Integer = -1
 
@@ -8,8 +8,6 @@ Public Class AMPlayer
     Public PlaylistList As New List(Of String)
 
     Private clsVis As clsVisualization
-
-    Private OpenFileThread As Thread
     Private dblSamples() As Double
 
     Private nCurrentPlayIndex As Integer = INVALID_INDEX
@@ -21,7 +19,7 @@ Public Class AMPlayer
     Private Sub AMPlayer_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         ' Create decoder
         Decoder = New DecoderManager
-        Decoder.Init(Me.Handle, DecoderManager.OutputPlugins.WaveOut)
+        Decoder.Init(Me.Handle, DecoderManager.OutputPlugins.DirectSound)
 
         ' Reload output values
         VolumePanControl1.Volume = Decoder.Volume
@@ -370,11 +368,7 @@ Public Class AMPlayer
         End If
     End Sub
 
-    Private Sub PositionTrackbar_MouseUp(sender As Object, e As MouseEventArgs) Handles PositionTrackbar.MouseUp
-        If e.Button = MouseButtons.Left Then
-            Decoder.Position = PositionTrackbar.Value
-        End If
-    End Sub
+
 
     Private Sub PlayHelper()
         If Decoder Is Nothing Then Exit Sub
@@ -647,6 +641,89 @@ Public Class AMPlayer
         Else
             Playlist.ClearHighlight()
             Playlist.UpdateRowGraphics()
+        End If
+    End Sub
+
+    Private Sub OpenPlaylistFile()
+        Dim SaveDialog As New SafeFileDialog
+        Dim PlsManager As New PlaylistManager
+
+        Dim FilePath As String
+        Dim Info As StreamInformations
+
+        Dim ArtistTitle As String
+        Dim strDuration As String
+
+        FilePath = SaveDialog.OpenSingleFile("Supported Playlist|" & PlsManager.GetPlaylistReaderExtensions)
+
+        ' If no file are selected, exit
+        If FilePath Is Nothing Then Exit Sub
+
+        If PlsManager.Open(FilePath, PlaylistManager.PlaylistMode.Read) = True Then
+
+            For i As Integer = 0 To PlsManager.ReadCount - 1
+
+                ' Read Playlist informations
+                Info = PlsManager.ReadIndex(i)
+
+                ' Add file to list of Playlist
+                PlaylistList.Add(Info.FileLocation)
+
+                ' Check if duration is valid, oterwise use file size
+                If Info.DurationInMs <> 0 Then
+                    With TimeSpan.FromMilliseconds(Info.DurationInMs)
+                        If .Hours <> 0 Then
+                            strDuration = Fix(.Hours) & ":" & Fix(.Minutes) & ":" & Format(.Seconds, "00")
+                        Else
+                            strDuration = Fix(.Minutes) & ":" & Format(.Seconds, "00")
+                        End If
+
+                    End With
+                Else
+                    strDuration = Info.FileSize \ 1024000
+                End If
+
+                ' Fill with TAG if avaiable otherwise use file name
+                If (Info.Title <> "") And (Info.Artist <> "") Then
+                    ArtistTitle = Info.Artist & " - " & Info.Title
+                Else
+                    ArtistTitle = Info.FileName
+                End If
+
+
+
+                ' Add file to Playlist
+                Playlist.AddRow(ArtistTitle,
+                                strDuration)
+            Next
+
+            PlsManager.Close()
+            PlsManager.Dispose()
+
+            ' Redraw Playlist
+            Playlist.UpdateScrollbars()
+            Playlist.UpdateRowGraphics()
+        End If
+
+    End Sub
+
+    Private Sub OpenPlaylistToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenPlaylistToolStripMenuItem.Click
+        OpenPlaylistFile()
+    End Sub
+
+    Private Sub PositionTrackbar_SeekDone(sender As Object, e As Winamp.Components.WinampTrackBarSeekEventArgs) Handles PositionTrackbar.SeekDone
+        If Decoder IsNot Nothing Then
+            If Decoder.Status = Status.PLAYING Then
+                Decoder.Position = PositionTrackbar.Value
+            End If
+        End If
+    End Sub
+
+    Private Sub PositionTrackbar_Click(sender As Object, e As EventArgs) Handles PositionTrackbar.Click
+        If Decoder IsNot Nothing Then
+            If Decoder.Status = Status.PLAYING Then
+                Decoder.Position = PositionTrackbar.Value
+            End If
         End If
     End Sub
 End Class

@@ -9,7 +9,7 @@
       <Value Profile="(Default)">2000</Value>
     </Setting>
     <Setting Name="DirectSound_PreBufferLen" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">200</Value>
+      <Value Profile="(Default)">250</Value>
     </Setting>
     <Setting Name="DirectSound_EnableFading" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

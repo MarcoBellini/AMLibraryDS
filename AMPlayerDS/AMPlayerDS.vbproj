@@ -171,6 +171,11 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AMLibraryDS\Classes\Encoder\EncoderMP3\LameHandle.vb" />
+    <Compile Include="AMLibraryDS\Classes\PlaylistManager.vb" />
+    <Compile Include="AMLibraryDS\Classes\Playlist\ReaderM3U.vb" />
+    <Compile Include="AMLibraryDS\Classes\Playlist\WriterM3U.vb" />
+    <Compile Include="AMLibraryDS\Interfaces\IPlaylistWriter.vb" />
+    <Compile Include="AMLibraryDS\Interfaces\IPlaylistReader.vb" />
     <Compile Include="AMPlayerDS\Classes\clsVisualization.vb" />
     <Compile Include="AMLibraryDS\Classes\EncoderManager.vb" />
     <Compile Include="AMLibraryDS\Classes\Encoder\EncoderWAV\EncoderWAV.vb" />
@@ -193,7 +198,7 @@
     <Compile Include="AMLibraryDS\Classes\Stream\StreamCDA\StreamCDA.vb" />
     <Compile Include="AMLibraryDS\Classes\Stream\StreamMediaFondation\StreamMediaFondation.vb" />
     <Compile Include="AMLibraryDS\Classes\Stream\StreamOpus\StreamOpus.vb" />
-    <Compile Include="AMLibraryDS\Interfaces\StreamInformations.vb" />
+    <Compile Include="AMLibraryDS\Classes\StreamInformations.vb" />
     <Compile Include="AMLibraryDS\Classes\Stream\StreamMP3\StreamMP3.vb" />
     <Compile Include="AMLibraryDS\Classes\Stream\StreamOGG\StreamOGG.vb" />
     <Compile Include="AMLibraryDS\Classes\Stream\StreamWAV\StreamWAV.vb" />
@@ -224,7 +229,7 @@
       <DependentUpon>AMPlayer.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AMLibraryDS\Interfaces\Commons.vb" />
+    <Compile Include="AMLibraryDS\Modules\Commons.vb" />
     <Compile Include="AMLibraryDS\Interfaces\ISoundDecoder.vb" />
     <Compile Include="AMLibraryDS\Interfaces\ISoundEffect.vb" />
     <Compile Include="AMLibraryDS\Interfaces\ISoundEncoder.vb" />
@@ -350,7 +355,10 @@
     <Content Include="logoNewIco.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AMLibraryDS\Classes\Playlist\" />
+    <ProjectReference Include="..\WinampComponents\WinampComponents.csproj">
+      <Project>{5a910b52-6ab0-4f84-875d-fff8893a4383}</Project>
+      <Name>WinampComponents</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>

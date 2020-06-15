@@ -71,14 +71,13 @@ Partial Class AMPlayer
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.EqualizerToolStrip = New System.Windows.Forms.ToolStripButton()
         Me.VolumeControlButton = New System.Windows.Forms.ToolStripButton()
-        Me.PositionTrackbar = New System.Windows.Forms.TrackBar()
         Me.PicVisualization = New System.Windows.Forms.PictureBox()
+        Me.PositionTrackbar = New Winamp.Components.WinampTrackBar()
         Me.VolumePanControl1 = New AMPlayerDS.VolumePanControl()
         Me.Playlist = New AMPlayerDS.CustomListViewControl()
         Me.BottomStrip.SuspendLayout()
         Me.MenuStrip1.SuspendLayout()
         Me.TopToolstrip.SuspendLayout()
-        CType(Me.PositionTrackbar, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PicVisualization, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -409,19 +408,6 @@ Partial Class AMPlayer
         Me.VolumeControlButton.Size = New System.Drawing.Size(23, 22)
         Me.VolumeControlButton.Text = "Volume and Pan"
         '
-        'PositionTrackbar
-        '
-        Me.PositionTrackbar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.PositionTrackbar.LargeChange = 10
-        Me.PositionTrackbar.Location = New System.Drawing.Point(0, 328)
-        Me.PositionTrackbar.Name = "PositionTrackbar"
-        Me.PositionTrackbar.Size = New System.Drawing.Size(524, 45)
-        Me.PositionTrackbar.SmallChange = 10
-        Me.PositionTrackbar.TabIndex = 30
-        Me.PositionTrackbar.TickFrequency = 0
-        Me.PositionTrackbar.TickStyle = System.Windows.Forms.TickStyle.Both
-        '
         'PicVisualization
         '
         Me.PicVisualization.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
@@ -432,6 +418,24 @@ Partial Class AMPlayer
         Me.PicVisualization.Size = New System.Drawing.Size(104, 41)
         Me.PicVisualization.TabIndex = 32
         Me.PicVisualization.TabStop = False
+        '
+        'PositionTrackbar
+        '
+        Me.PositionTrackbar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.PositionTrackbar.BackColor = System.Drawing.SystemColors.Control
+        Me.PositionTrackbar.EmptyTrackColor = System.Drawing.Color.DarkSeaGreen
+        Me.PositionTrackbar.ForeColor = System.Drawing.SystemColors.Desktop
+        Me.PositionTrackbar.KeyChangeOption = Winamp.Components.WinampTrackBar.WinampTrackBarKeyChangeOption.LeftAndRightArrowKeys
+        Me.PositionTrackbar.Location = New System.Drawing.Point(12, 328)
+        Me.PositionTrackbar.Name = "PositionTrackbar"
+        Me.PositionTrackbar.ScaleType = Winamp.Components.WinampTrackBar.WinampTrackBarScaleType.None
+        Me.PositionTrackbar.Size = New System.Drawing.Size(500, 31)
+        Me.PositionTrackbar.SliderButtonSize = New System.Drawing.Size(30, 15)
+        Me.PositionTrackbar.TabIndex = 33
+        Me.PositionTrackbar.ToolTipActive = False
+        Me.PositionTrackbar.TrackLowerColor = System.Drawing.Color.MediumAquamarine
+        Me.PositionTrackbar.TrackUpperColor = System.Drawing.Color.Aquamarine
         '
         'VolumePanControl1
         '
@@ -469,9 +473,9 @@ Partial Class AMPlayer
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(524, 396)
+        Me.Controls.Add(Me.PositionTrackbar)
         Me.Controls.Add(Me.PicVisualization)
         Me.Controls.Add(Me.VolumePanControl1)
-        Me.Controls.Add(Me.PositionTrackbar)
         Me.Controls.Add(Me.TopToolstrip)
         Me.Controls.Add(Me.BottomStrip)
         Me.Controls.Add(Me.MenuStrip1)
@@ -488,7 +492,6 @@ Partial Class AMPlayer
         Me.MenuStrip1.PerformLayout()
         Me.TopToolstrip.ResumeLayout(False)
         Me.TopToolstrip.PerformLayout()
-        CType(Me.PositionTrackbar, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.PicVisualization, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
@@ -526,7 +529,6 @@ Partial Class AMPlayer
     Friend WithEvents PauseStripButton As ToolStripButton
     Friend WithEvents StopStripButton As ToolStripButton
     Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
-    Friend WithEvents PositionTrackbar As TrackBar
     Friend WithEvents StatusLabel As ToolStripStatusLabel
     Friend WithEvents VolumeControlButton As ToolStripButton
     Friend WithEvents VolumePanControl1 As VolumePanControl
@@ -548,4 +550,5 @@ Partial Class AMPlayer
     Friend WithEvents EffectsToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem8 As ToolStripSeparator
     Friend WithEvents GetFullDetailsToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents PositionTrackbar As Winamp.Components.WinampTrackBar
 End Class

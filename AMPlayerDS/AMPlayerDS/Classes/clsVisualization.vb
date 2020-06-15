@@ -18,6 +18,9 @@
     ' At 44100hz samplerate remebrer: 1= 85 hz and 256=22050
     ' Human range value is from 30hz to 11000hz
     Private frequency() As Integer = {1, 5, 7, 10, 15, 18, 20, 23, 25, 30, 35, 40, 45, 50, 60, 80, 90, 100, 110, 127}
+
+    ' Multiply Each band to Loud high frequecies. This allow to 
+    ' draw a well shaped spectrums
     Private gain() As Single = {0.2, 0.25, 0.4, 0.5, 0.7, 0.8, 0.9, 1.0, 1.0, 1.5, 1.5, 1.7, 2.0, 2.5, 2.5, 2.5, 3.0, 3.0, 3.5, 4.0}
 
     Private bars(NUMBER_OF_BARS - 1) As VisualizationBar

@@ -18,7 +18,7 @@ Public Class LameHandle
             DebugPrintLine("LameHandle", "Handle correctly Closed")
 #End If
 
-            Return Lame.lame_close(handle) = 0  ' free lame resources
+            Return Lame.lame_close(handle) = 0  ' Free lame resources
         End If
 
         Return False

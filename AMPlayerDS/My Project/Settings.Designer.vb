@@ -80,7 +80,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("200")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("250")>  _
         Public Property DirectSound_PreBufferLen() As Integer
             Get
                 Return CType(Me("DirectSound_PreBufferLen"),Integer)
