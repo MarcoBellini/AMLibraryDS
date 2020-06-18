@@ -182,10 +182,10 @@
         Return Nothing
     End Function
 
-    Public Function WriteLine(ByVal Index As Long, ByRef Info As StreamInformations) As Boolean
-        If CurrentMode = PlaylistMode.Read Then
+    Public Function WriteLine(ByRef Info As StreamInformations) As Boolean
+        If CurrentMode = PlaylistMode.Write Then
             If bIsOpen = True Then
-                Return Output.WriteInformations(Index, Info)
+                Return Output.WriteInformations(Info)
             End If
         End If
 

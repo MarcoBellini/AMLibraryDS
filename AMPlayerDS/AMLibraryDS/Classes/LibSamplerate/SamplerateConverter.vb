@@ -27,7 +27,7 @@ Public Class SamplerateConverter
         Stereo = 2
     End Enum
 
-    Private Handle As SRC_STATE
+    Private Handle As SRCState
     Private ConversionRatio As Double
     Private InChannels, OutChannels As Channels
     Private Data As New LibSamplerate.SRC_DATA

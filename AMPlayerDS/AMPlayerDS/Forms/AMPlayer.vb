@@ -1,11 +1,17 @@
 ' Winamp style trackbar source code:
 ' https://www.codeproject.com/Articles/997101/Custom-Winamp-Style-TrackBar-Slider
 Public Class AMPlayer
+
+    ' TODO: Update code (use Open file function helper)
+    ' Order functions
+    ' Add About form
+    ' Add Rip CD form
+
     Private Const INVALID_INDEX As Integer = -1
 
     Private WithEvents Decoder As DecoderManager
 
-    Public PlaylistList As New List(Of String)
+    Public PlaylistList As New List(Of StreamInformations)
 
     Private clsVis As clsVisualization
     Private dblSamples() As Double
@@ -26,8 +32,8 @@ Public Class AMPlayer
         VolumePanControl1.Pan = Decoder.Pan
 
         ' Create playlist
-        Playlist.AddColumn("File Name", 405)
-        Playlist.AddColumn("File Info", 100)
+        Playlist.AddColumn("Artist / Title", 405)
+        Playlist.AddColumn("Duration", 100)
 
         ' Add effects to menù
         AddEffectsToMenu()
@@ -82,7 +88,7 @@ Public Class AMPlayer
         Me.Text = "AMPlayer - " & title
     End Sub
 
-    Private Sub control_File_Opened(ByVal info As StreamInformations) Handles Decoder.File_Opened
+    Private Sub Control_File_Opened(ByVal info As StreamInformations) Handles Decoder.File_Opened
 
         Dim UpdateTrackbar As New UpdateTrackBarDelegate(AddressOf UpdatePositionTrackBar)
         Dim UpdateTitle As New UpdateTitleDelegate(AddressOf UpdateTitleSafe)
@@ -104,11 +110,13 @@ Public Class AMPlayer
                 VisualizationTimer.Enabled = True
                 TrackbarTimer.Enabled = True
             Case Status.STOPPED
+                Dim UpdateTrackbar As New UpdateTrackBarDelegate(AddressOf UpdatePositionTrackBar)
+
                 VisualizationTimer.Enabled = True
                 TrackbarTimer.Enabled = False
 
-                ' Reset label and trackbar
-                PositionTrackbar.Value = 0
+                ' Thread Safe update trackbar
+                PositionTrackbar.Invoke(UpdateTrackbar)
                 With TimeSpan.FromSeconds(0)
                     TimeStripLabel.Text = Format(.TotalHours, "0") + ":" + Fix(.TotalMinutes).ToString + ":" + Format(.Seconds, "00")
                 End With
@@ -125,8 +133,7 @@ Public Class AMPlayer
         Dim SafeDialog As New SafeFileDialog
         Dim Results() As String
         Dim FilePath As String
-        Dim nFileSize As Integer
-        Dim FileInformations As IO.FileInfo
+        Dim Info As StreamInformations
 
         Results = SafeDialog.OpenMultipleFiles("Supported Files|" & Decoder.GetSupportedExtension)
 
@@ -136,15 +143,17 @@ Public Class AMPlayer
                 FilePath = Results(i)
 
                 ' Add file to list of Playlist
-                PlaylistList.Add(FilePath)
+                Info = New StreamInformations
+                Info.FillBasicFileInfo(FilePath)
+                Info.DurationInMs = 0
 
-                ' Get file size in Mb
-                FileInformations = New IO.FileInfo(FilePath)
-                nFileSize = FileInformations.Length \ 1024000
+                PlaylistList.Add(Info)
 
-                ' Add file to Playlist
+                ' Add files to Playlist
                 Playlist.AddRow(IO.Path.GetFileNameWithoutExtension(FilePath),
-                                nFileSize.ToString)
+                                "0:00")
+
+
             Next
 
             ' Update playlist
@@ -156,6 +165,7 @@ Public Class AMPlayer
     Private Sub AddFolderToPlaylist()
         Dim SafeDialog As New SafeFileDialog
         Dim Result As String
+        Dim Info As StreamInformations
 
         ' Opend folder selection dialog (STA thread)
         Result = SafeDialog.SelectFolder()
@@ -164,8 +174,6 @@ Public Class AMPlayer
         If (Result <> "") And (Decoder IsNot Nothing) Then
             Dim Files() As String
             Dim FilePath As String
-            Dim nFileSize As Integer
-            Dim FileInformations As IO.FileInfo
             Dim SupportedExtensions As String = Decoder.GetSupportedExtension
 
             ' Get all files in the selected directory
@@ -178,15 +186,15 @@ Public Class AMPlayer
                     FilePath = Files(i)
 
                     ' Add file to list of Playlist
-                    PlaylistList.Add(FilePath)
+                    Info = New StreamInformations
+                    Info.FillBasicFileInfo(FilePath)
+                    Info.DurationInMs = 0
 
-                    ' Get file size in Mb
-                    FileInformations = New IO.FileInfo(FilePath)
-                    nFileSize = FileInformations.Length \ 1024000
+                    PlaylistList.Add(Info)
 
-                    ' Add file to Playlist
+                    ' Add files to Playlist
                     Playlist.AddRow(IO.Path.GetFileNameWithoutExtension(FilePath),
-                                    nFileSize.ToString)
+                                    "0:00")
                 End If
             Next
 
@@ -233,6 +241,7 @@ Public Class AMPlayer
         Dim cdrom As New CDDrive
         Dim nDuration As Long
         Dim strDuration As String
+        Dim Info As StreamInformations
 
         ' Open cd
         If cdrom.Open(drive) = True Then
@@ -240,15 +249,18 @@ Public Class AMPlayer
                 For i As Integer = 1 To cdrom.GetNumAudioTracks
 
                     ' Add in the list in a format C: - 1.cda
-                    PlaylistList.Add(drive & "-" & i.ToString & ".cda")
+                    Info = New StreamInformations
+                    Info.FileLocation = drive & "-" & i.ToString & ".cda"
 
-                    ' Calculate duration of each track
+                    ' Calculate duration of each track( 44100kz at 16bits 2 channels)
                     nDuration = cdrom.GetTrackLength(i) * 2352 \ 176400
+                    Info.DurationInMs = nDuration * 1000
 
                     With TimeSpan.FromSeconds(nDuration)
                         strDuration = Fix(.Minutes) & ":" & Format(.Seconds, "00")
                     End With
 
+                    PlaylistList.Add(Info)
                     Playlist.AddRow("CD Track: " & i.ToString, strDuration)
                 Next
             End If
@@ -285,9 +297,35 @@ Public Class AMPlayer
     End Sub
 
     Private Sub Playlist_ItemDoubleClick(index As Integer) Handles Playlist.ItemDoubleClick
-        If Decoder.OpenFile(PlaylistList(index)) = True Then
+        Dim info As StreamInformations
+        Dim StrDuration As String
+
+        If Decoder.OpenFile(PlaylistList(index).FileLocation) = True Then
             PlayHelper()
             nCurrentPlayIndex = index
+
+            ' Get current opened file stream informations
+            info = Decoder.CurrentFileStreamInfo
+
+            ' Update current item
+            PlaylistList(index) = info
+
+            ' Calculate informations
+            With TimeSpan.FromMilliseconds(info.DurationInMs)
+                If .Hours <> 0 Then
+                    StrDuration = Fix(.Hours) & ":" & Fix(.Minutes) & ":" & Format(.Seconds, "00")
+                Else
+                    StrDuration = Fix(.Minutes) & ":" & Format(.Seconds, "00")
+                End If
+
+            End With
+
+            ' Update playlist
+            If info.Artist <> "" And info.Title <> "" Then
+                Playlist.EditRow(index, info.Artist & " - " & info.Title, StrDuration)
+            Else
+                Playlist.EditRow(index, info.FileName, StrDuration)
+            End If
 
             ' Highlight playing Index
             UpdatePlaylistHighlight()
@@ -296,7 +334,7 @@ Public Class AMPlayer
 
     Private Sub Playlist_ItemKeyDown(index As Integer, key As KeyEventArgs) Handles Playlist.ItemKeyDown
         If key.KeyCode = Keys.Enter Then
-            If Decoder.OpenFile(PlaylistList(index)) = True Then
+            If Decoder.OpenFile(PlaylistList(index).FileLocation) = True Then
                 PlayHelper()
                 nCurrentPlayIndex = index
 
@@ -402,7 +440,7 @@ Public Class AMPlayer
 
                 nCurrentPlayIndex += 1
 
-                If Decoder.OpenFile(PlaylistList(nCurrentPlayIndex)) = True Then
+                If Decoder.OpenFile(PlaylistList(nCurrentPlayIndex).FileLocation) = True Then
                     PlayHelper()
                 End If
             Else
@@ -424,7 +462,7 @@ Public Class AMPlayer
             If nCurrentPlayIndex > 0 Then
                 nCurrentPlayIndex -= 1
 
-                If Decoder.OpenFile(PlaylistList(nCurrentPlayIndex)) = True Then
+                If Decoder.OpenFile(PlaylistList(nCurrentPlayIndex).FileLocation) = True Then
                     PlayHelper()
                 End If
 
@@ -579,7 +617,10 @@ Public Class AMPlayer
         Dim strDuration As String
 
         For i As Integer = 0 To PlaylistList.Count - 1
-            info = Decoder.FastStreamInformation(PlaylistList(i))
+            info = Decoder.FastStreamInformation(PlaylistList(i).FileLocation)
+
+            ' Update current item
+            PlaylistList(i) = info
 
             ' Check if informations are valid
             If info IsNot Nothing Then
@@ -645,7 +686,7 @@ Public Class AMPlayer
     End Sub
 
     Private Sub OpenPlaylistFile()
-        Dim SaveDialog As New SafeFileDialog
+        Dim OpenDialog As New SafeFileDialog
         Dim PlsManager As New PlaylistManager
 
         Dim FilePath As String
@@ -654,7 +695,7 @@ Public Class AMPlayer
         Dim ArtistTitle As String
         Dim strDuration As String
 
-        FilePath = SaveDialog.OpenSingleFile("Supported Playlist|" & PlsManager.GetPlaylistReaderExtensions)
+        FilePath = OpenDialog.OpenSingleFile("Supported Playlist|" & PlsManager.GetPlaylistReaderExtensions)
 
         ' If no file are selected, exit
         If FilePath Is Nothing Then Exit Sub
@@ -667,7 +708,7 @@ Public Class AMPlayer
                 Info = PlsManager.ReadIndex(i)
 
                 ' Add file to list of Playlist
-                PlaylistList.Add(Info.FileLocation)
+                PlaylistList.Add(Info)
 
                 ' Check if duration is valid, oterwise use file size
                 If Info.DurationInMs <> 0 Then
@@ -680,7 +721,7 @@ Public Class AMPlayer
 
                     End With
                 Else
-                    strDuration = Info.FileSize \ 1024000
+                    strDuration = "0:00"
                 End If
 
                 ' Fill with TAG if avaiable otherwise use file name
@@ -689,7 +730,6 @@ Public Class AMPlayer
                 Else
                     ArtistTitle = Info.FileName
                 End If
-
 
 
                 ' Add file to Playlist
@@ -714,16 +754,43 @@ Public Class AMPlayer
     Private Sub PositionTrackbar_SeekDone(sender As Object, e As Winamp.Components.WinampTrackBarSeekEventArgs) Handles PositionTrackbar.SeekDone
         If Decoder IsNot Nothing Then
             If Decoder.Status = Status.PLAYING Then
-                Decoder.Position = PositionTrackbar.Value
+                Decoder.Position = e.Value
             End If
         End If
     End Sub
 
-    Private Sub PositionTrackbar_Click(sender As Object, e As EventArgs) Handles PositionTrackbar.Click
-        If Decoder IsNot Nothing Then
-            If Decoder.Status = Status.PLAYING Then
-                Decoder.Position = PositionTrackbar.Value
-            End If
+
+
+    Private Sub SavePlaylistToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SavePlaylistToolStripMenuItem.Click
+        Dim SaveDialog As New SafeFileDialog
+        Dim PlsManager As New PlaylistManager
+
+        Dim FilePath As String
+
+        FilePath = SaveDialog.SaveSingleFile("Supported Playlist|" & PlsManager.GetPlaylistWriterExtensions)
+
+        If FilePath Is Nothing Then Exit Sub
+
+        If PlsManager.Open(FilePath, PlaylistManager.PlaylistMode.Write) = True Then
+
+            For i As Integer = 0 To PlaylistList.Count - 1
+                PlsManager.WriteLine(PlaylistList(i))
+            Next
+
+            PlsManager.Close()
+            PlsManager.Dispose()
         End If
+    End Sub
+
+    Private Sub PositionTrackbar_ValueChanged(sender As Object, e As Winamp.Components.WinampTrackBarValueChangedEventArgs) Handles PositionTrackbar.ValueChanged
+        Select Case e.ChangeSource
+            Case Winamp.Components.WinampTrackBar.WinampTrackBarValueChangeSource.TrackClick
+                If Decoder IsNot Nothing Then
+                    If Decoder.Status = Status.PLAYING Then
+                        Decoder.Position = e.Value
+                    End If
+                End If
+
+        End Select
     End Sub
 End Class

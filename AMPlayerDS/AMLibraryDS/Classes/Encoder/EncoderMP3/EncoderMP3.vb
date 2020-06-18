@@ -81,7 +81,7 @@ Public Class EncoderMP3
 
     Public Function Write(ByRef Buffer() As Byte, offset As Integer, Count As Integer) As Integer Implements ISoundEncoder.Write
         If bIsOpen = True Then
-            Dim ShortIntervaledArray(Count \ 2 - 1) As Short
+            Dim ShortInterleavedArray(Count \ 2 - 1) As Short
             Dim ShortBufferHandle As GCHandle
 
             Dim ByteBuffer() As Byte
@@ -91,8 +91,8 @@ Public Class EncoderMP3
             Dim nBufferSize As Integer
 
             ' Prepare memory for input PCM 
-            byte_to_short_array(Buffer, ShortIntervaledArray, Count)
-            ShortBufferHandle = GCHandle.Alloc(ShortIntervaledArray, GCHandleType.Pinned)
+            byte_to_short_array(Buffer, ShortInterleavedArray, Count)
+            ShortBufferHandle = GCHandle.Alloc(ShortInterleavedArray, GCHandleType.Pinned)
 
             ' Prepare memory for MP3 output buffer
             nBufferSize = 1.25 * Count \ 4 + 7200

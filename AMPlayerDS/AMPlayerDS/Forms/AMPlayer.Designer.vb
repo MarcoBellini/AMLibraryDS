@@ -135,52 +135,52 @@ Partial Class AMPlayer
         'OpenFileToolStripMenuItem
         '
         Me.OpenFileToolStripMenuItem.Name = "OpenFileToolStripMenuItem"
-        Me.OpenFileToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
-        Me.OpenFileToolStripMenuItem.Text = "Open File"
+        Me.OpenFileToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.OpenFileToolStripMenuItem.Text = "Open File..."
         '
         'OpenCDToolStripMenuItem
         '
         Me.OpenCDToolStripMenuItem.Name = "OpenCDToolStripMenuItem"
-        Me.OpenCDToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
-        Me.OpenCDToolStripMenuItem.Text = "Open CD"
+        Me.OpenCDToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.OpenCDToolStripMenuItem.Text = "Open CD..."
         '
         'ToolStripMenuItem1
         '
         Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(183, 6)
+        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(177, 6)
         '
         'AddFilesToPlaylistToolStripMenuItem
         '
         Me.AddFilesToPlaylistToolStripMenuItem.Name = "AddFilesToPlaylistToolStripMenuItem"
-        Me.AddFilesToPlaylistToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
-        Me.AddFilesToPlaylistToolStripMenuItem.Text = "Add Files to Playlist"
+        Me.AddFilesToPlaylistToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.AddFilesToPlaylistToolStripMenuItem.Text = "Add Files..."
         '
         'AddFolderToPlaylistToolStripMenuItem
         '
         Me.AddFolderToPlaylistToolStripMenuItem.Name = "AddFolderToPlaylistToolStripMenuItem"
-        Me.AddFolderToPlaylistToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
-        Me.AddFolderToPlaylistToolStripMenuItem.Text = "Add Folder to Playlist"
+        Me.AddFolderToPlaylistToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.AddFolderToPlaylistToolStripMenuItem.Text = "Add Folder..."
         '
         'ToolStripMenuItem2
         '
         Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
-        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(183, 6)
+        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(177, 6)
         '
         'PreferenciesToolStripMenuItem
         '
         Me.PreferenciesToolStripMenuItem.Name = "PreferenciesToolStripMenuItem"
-        Me.PreferenciesToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
-        Me.PreferenciesToolStripMenuItem.Text = "Preferencies"
+        Me.PreferenciesToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.PreferenciesToolStripMenuItem.Text = "Preferences"
         '
         'ToolStripMenuItem4
         '
         Me.ToolStripMenuItem4.Name = "ToolStripMenuItem4"
-        Me.ToolStripMenuItem4.Size = New System.Drawing.Size(183, 6)
+        Me.ToolStripMenuItem4.Size = New System.Drawing.Size(177, 6)
         '
         'ExitToolStripMenuItem
         '
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
+        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.ExitToolStripMenuItem.Text = "Exit"
         '
         'PlaylistToolStripMenuItem
@@ -193,41 +193,41 @@ Partial Class AMPlayer
         'ClearSelectedItemsToolStripMenuItem
         '
         Me.ClearSelectedItemsToolStripMenuItem.Name = "ClearSelectedItemsToolStripMenuItem"
-        Me.ClearSelectedItemsToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
-        Me.ClearSelectedItemsToolStripMenuItem.Text = "Clear Selected Items"
+        Me.ClearSelectedItemsToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
+        Me.ClearSelectedItemsToolStripMenuItem.Text = "Delete Selected Items"
         '
         'ClearAllToolStripMenuItem
         '
         Me.ClearAllToolStripMenuItem.Name = "ClearAllToolStripMenuItem"
-        Me.ClearAllToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
-        Me.ClearAllToolStripMenuItem.Text = "Clear All"
+        Me.ClearAllToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
+        Me.ClearAllToolStripMenuItem.Text = "Delete All"
         '
         'ToolStripMenuItem5
         '
         Me.ToolStripMenuItem5.Name = "ToolStripMenuItem5"
-        Me.ToolStripMenuItem5.Size = New System.Drawing.Size(177, 6)
+        Me.ToolStripMenuItem5.Size = New System.Drawing.Size(183, 6)
         '
         'SavePlaylistToolStripMenuItem
         '
         Me.SavePlaylistToolStripMenuItem.Name = "SavePlaylistToolStripMenuItem"
-        Me.SavePlaylistToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.SavePlaylistToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
         Me.SavePlaylistToolStripMenuItem.Text = "Save Playlist..."
         '
         'OpenPlaylistToolStripMenuItem
         '
         Me.OpenPlaylistToolStripMenuItem.Name = "OpenPlaylistToolStripMenuItem"
-        Me.OpenPlaylistToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.OpenPlaylistToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
         Me.OpenPlaylistToolStripMenuItem.Text = "Open Playlist..."
         '
         'ToolStripMenuItem8
         '
         Me.ToolStripMenuItem8.Name = "ToolStripMenuItem8"
-        Me.ToolStripMenuItem8.Size = New System.Drawing.Size(177, 6)
+        Me.ToolStripMenuItem8.Size = New System.Drawing.Size(183, 6)
         '
         'GetFullDetailsToolStripMenuItem
         '
         Me.GetFullDetailsToolStripMenuItem.Name = "GetFullDetailsToolStripMenuItem"
-        Me.GetFullDetailsToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.GetFullDetailsToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
         Me.GetFullDetailsToolStripMenuItem.Text = "Get Full Details"
         '
         'PlaybackToolStripMenuItem
@@ -280,8 +280,8 @@ Partial Class AMPlayer
         'ViewFileTagsToolStripMenuItem
         '
         Me.ViewFileTagsToolStripMenuItem.Name = "ViewFileTagsToolStripMenuItem"
-        Me.ViewFileTagsToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
-        Me.ViewFileTagsToolStripMenuItem.Text = "View File Tags"
+        Me.ViewFileTagsToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.ViewFileTagsToolStripMenuItem.Text = "View Tags.."
         '
         'ToolsToolStripMenuItem
         '

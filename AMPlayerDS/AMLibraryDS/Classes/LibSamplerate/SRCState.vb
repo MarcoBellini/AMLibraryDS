@@ -4,7 +4,7 @@ Imports Microsoft.Win32.SafeHandles
 ''' <summary>
 ''' Pointer to Samplerate handle
 ''' </summary>
-Public Class SRC_STATE
+Public Class SRCState
     Inherits SafeHandleZeroOrMinusOneIsInvalid
 
     Public Sub New()

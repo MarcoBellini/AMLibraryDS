@@ -183,7 +183,7 @@
     <Compile Include="AMLibraryDS\Classes\Fourier Transform\FastFourierTrasform.vb" />
     <Compile Include="AMLibraryDS\Classes\LibSamplerate\LibSamplerate.vb" />
     <Compile Include="AMLibraryDS\Classes\LibSamplerate\SamplerateConverter.vb" />
-    <Compile Include="AMLibraryDS\Classes\LibSamplerate\SRC_STATE.vb" />
+    <Compile Include="AMLibraryDS\Classes\LibSamplerate\SRCState.vb" />
     <Compile Include="AMLibraryDS\Classes\Output\DirectSoundOutput\DirectSoundFadeEffect.vb" />
     <Compile Include="AMLibraryDS\Classes\Output\DirectSoundOutput\DirectSoundNative.vb" />
     <Compile Include="AMLibraryDS\Classes\Output\DirectSoundOutput\DirectSoundOutput.vb" />

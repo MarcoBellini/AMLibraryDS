@@ -96,7 +96,7 @@ Public Class ReaderM3U
         If My.Computer.FileSystem.FileExists(path) = False Then Return False
 
         ' Try to open new stream
-        TextStream = New StreamReader(path, System.Text.Encoding.UTF8)
+        TextStream = New StreamReader(path, Text.Encoding.Default)
 
         ' Check if TextStream is valid
         If TextStream Is Nothing Then Return False

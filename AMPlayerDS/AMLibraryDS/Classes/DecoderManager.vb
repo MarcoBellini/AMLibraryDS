@@ -16,8 +16,6 @@ Public Class DecoderManager
     Private DecoderList As New List(Of ISoundDecoder)
     Private SoundEffectList As New List(Of ISoundEffect)
 
-    Private CurrentStatus As Status = Status.STOPPED
-
     Private bIsInit As Boolean = False
     Private bIsOpen As Boolean = False
 

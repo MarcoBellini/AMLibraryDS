@@ -114,7 +114,7 @@ Public Class LibSamplerate
     <DllImport(LibSamplerateDll, CallingConvention:=CallingConvention.Cdecl)>
     Public Shared Function src_new(ByVal converter_type As ConverterType,
                                    ByVal channels As Integer,
-                                   ByRef error_value As Integer) As SRC_STATE
+                                   ByRef error_value As Integer) As SRCState
 
     End Function
 
@@ -123,8 +123,8 @@ Public Class LibSamplerate
     ''' containing the same internal state as orig. Error returned in *error.
     ''' </summary>
     <DllImport(LibSamplerateDll, CallingConvention:=CallingConvention.Cdecl)>
-    Public Shared Function src_clone(ByVal origin As SRC_STATE,
-                                     ByRef error_value As Integer) As SRC_STATE
+    Public Shared Function src_clone(ByVal origin As SRCState,
+                                     ByRef error_value As Integer) As SRCState
 
     End Function
 
@@ -140,7 +140,7 @@ Public Class LibSamplerate
                                             ByVal converter_type As ConverterType,
                                             ByVal channels As Integer,
                                             ByRef error_value As Integer,
-                                            ByVal cb_data As IntPtr) As SRC_STATE
+                                            ByVal cb_data As IntPtr) As SRCState
 
     End Function
 
@@ -157,7 +157,7 @@ Public Class LibSamplerate
     ''' Returns non zero on error.
     ''' </summary>
     <DllImport(LibSamplerateDll, CallingConvention:=CallingConvention.Cdecl)>
-    Public Shared Function src_process(ByVal state As SRC_STATE,
+    Public Shared Function src_process(ByVal state As SRCState,
                                        ByRef data As SRC_DATA) As Integer
     End Function
 
@@ -167,7 +167,7 @@ Public Class LibSamplerate
     ''' the converter int *data and return frames read or -1 on error.
     ''' </summary>
     <DllImport(LibSamplerateDll, CallingConvention:=CallingConvention.Cdecl)>
-    Public Shared Function src_callback_read(ByVal state As SRC_STATE,
+    Public Shared Function src_callback_read(ByVal state As SRCState,
                                              ByVal src_ratio As Double,
                                              ByVal frames As Long,
                                              ByVal data As IntPtr) As Integer
@@ -211,7 +211,7 @@ Public Class LibSamplerate
     ''' Returns non zero on error.
     ''' </summary>
     <DllImport(LibSamplerateDll, CallingConvention:=CallingConvention.Cdecl)>
-    Public Shared Function src_set_ratio(ByVal state As SRC_STATE,
+    Public Shared Function src_set_ratio(ByVal state As SRCState,
                                          ByVal new_ratio As Double) As Integer
 
     End Function
@@ -221,7 +221,7 @@ Public Class LibSamplerate
     ''' Returns negative on error, positive channel count otherwise
     ''' </summary>
     <DllImport(LibSamplerateDll, CallingConvention:=CallingConvention.Cdecl)>
-    Public Shared Function src_get_channels(ByVal state As SRC_STATE) As Integer
+    Public Shared Function src_get_channels(ByVal state As SRCState) As Integer
 
     End Function
 
@@ -232,7 +232,7 @@ Public Class LibSamplerate
     ''' Returns non zero on error.
     ''' </summary>
     <DllImport(LibSamplerateDll, CallingConvention:=CallingConvention.Cdecl)>
-    Public Shared Function src_reset(ByVal state As SRC_STATE) As Integer
+    Public Shared Function src_reset(ByVal state As SRCState) As Integer
 
     End Function
 
@@ -248,7 +248,7 @@ Public Class LibSamplerate
     ''' Return an error number.
     ''' </summary>
     <DllImport(LibSamplerateDll, CallingConvention:=CallingConvention.Cdecl)>
-    Public Shared Function src_error(ByVal state As SRC_STATE) As Integer
+    Public Shared Function src_error(ByVal state As SRCState) As Integer
     End Function
 
     ''' <summary>

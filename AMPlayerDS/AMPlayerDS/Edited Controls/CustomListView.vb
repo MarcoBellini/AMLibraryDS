@@ -1,7 +1,6 @@
 ﻿Imports System.Runtime.InteropServices
 
 ' Very basic Customized listview 
-' LIMIT: once is created is not resizable or customizable
 ' In design mode you can edit color,size and font
 
 ' Version: 0.02
