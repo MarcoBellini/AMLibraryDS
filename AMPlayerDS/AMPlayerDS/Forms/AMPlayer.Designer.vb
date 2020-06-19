@@ -240,42 +240,42 @@ Partial Class AMPlayer
         'PlayToolStripMenuItem
         '
         Me.PlayToolStripMenuItem.Name = "PlayToolStripMenuItem"
-        Me.PlayToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.PlayToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.PlayToolStripMenuItem.Text = "Play"
         '
         'PauseToolStripMenuItem
         '
         Me.PauseToolStripMenuItem.Name = "PauseToolStripMenuItem"
-        Me.PauseToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.PauseToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.PauseToolStripMenuItem.Text = "Pause"
         '
         'StopToolStripMenuItem
         '
         Me.StopToolStripMenuItem.Name = "StopToolStripMenuItem"
-        Me.StopToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.StopToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.StopToolStripMenuItem.Text = "Stop"
         '
         'ToolStripMenuItem3
         '
         Me.ToolStripMenuItem3.Name = "ToolStripMenuItem3"
-        Me.ToolStripMenuItem3.Size = New System.Drawing.Size(143, 6)
+        Me.ToolStripMenuItem3.Size = New System.Drawing.Size(177, 6)
         '
         'NextToolStripMenuItem
         '
         Me.NextToolStripMenuItem.Name = "NextToolStripMenuItem"
-        Me.NextToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.NextToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.NextToolStripMenuItem.Text = "Next"
         '
         'PreviouToolStripMenuItem
         '
         Me.PreviouToolStripMenuItem.Name = "PreviouToolStripMenuItem"
-        Me.PreviouToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.PreviouToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.PreviouToolStripMenuItem.Text = "Previous"
         '
         'ToolStripMenuItem6
         '
         Me.ToolStripMenuItem6.Name = "ToolStripMenuItem6"
-        Me.ToolStripMenuItem6.Size = New System.Drawing.Size(143, 6)
+        Me.ToolStripMenuItem6.Size = New System.Drawing.Size(177, 6)
         '
         'ViewFileTagsToolStripMenuItem
         '
@@ -293,24 +293,24 @@ Partial Class AMPlayer
         'TranscodeFilesToolStripMenuItem
         '
         Me.TranscodeFilesToolStripMenuItem.Name = "TranscodeFilesToolStripMenuItem"
-        Me.TranscodeFilesToolStripMenuItem.Size = New System.Drawing.Size(162, 22)
+        Me.TranscodeFilesToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.TranscodeFilesToolStripMenuItem.Text = "Transcode Files..."
         '
         'RipCDToolStripMenuItem
         '
         Me.RipCDToolStripMenuItem.Name = "RipCDToolStripMenuItem"
-        Me.RipCDToolStripMenuItem.Size = New System.Drawing.Size(162, 22)
+        Me.RipCDToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.RipCDToolStripMenuItem.Text = "Rip CD"
         '
         'ToolStripMenuItem7
         '
         Me.ToolStripMenuItem7.Name = "ToolStripMenuItem7"
-        Me.ToolStripMenuItem7.Size = New System.Drawing.Size(159, 6)
+        Me.ToolStripMenuItem7.Size = New System.Drawing.Size(177, 6)
         '
         'EffectsToolStripMenuItem
         '
         Me.EffectsToolStripMenuItem.Name = "EffectsToolStripMenuItem"
-        Me.EffectsToolStripMenuItem.Size = New System.Drawing.Size(162, 22)
+        Me.EffectsToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.EffectsToolStripMenuItem.Text = "Effects"
         '
         'SettingsToolStripMenuItem
@@ -421,12 +421,13 @@ Partial Class AMPlayer
         '
         'PositionTrackbar
         '
+        Me.PositionTrackbar.AllowMouseWheelChange = False
         Me.PositionTrackbar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.PositionTrackbar.BackColor = System.Drawing.SystemColors.Control
-        Me.PositionTrackbar.EmptyTrackColor = System.Drawing.Color.DarkSeaGreen
+        Me.PositionTrackbar.EmptyTrackColor = System.Drawing.Color.DarkOliveGreen
         Me.PositionTrackbar.ForeColor = System.Drawing.SystemColors.Desktop
-        Me.PositionTrackbar.KeyChangeOption = Winamp.Components.WinampTrackBar.WinampTrackBarKeyChangeOption.LeftAndRightArrowKeys
+        Me.PositionTrackbar.KeyChangeOption = Winamp.Components.WinampTrackBar.WinampTrackBarKeyChangeOption.NoKeyChange
         Me.PositionTrackbar.Location = New System.Drawing.Point(12, 328)
         Me.PositionTrackbar.Name = "PositionTrackbar"
         Me.PositionTrackbar.ScaleType = Winamp.Components.WinampTrackBar.WinampTrackBarScaleType.None

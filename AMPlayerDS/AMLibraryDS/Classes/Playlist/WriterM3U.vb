@@ -64,7 +64,7 @@ Public Class WriterM3U
             DurationString = (Info.DurationInMs \ 1000).ToString
         Else
             ' Estimade duration of mp3 based on file size
-            DurationString = Math.Floor(Info.FileSize * 0.008 / 290).ToString
+            DurationString = 0
         End If
 
         ' If there are valid ID3 informations use it, otherwise use file name
