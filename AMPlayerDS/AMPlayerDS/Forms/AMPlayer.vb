@@ -10,18 +10,20 @@ Public Class AMPlayer
     Private Const INVALID_INDEX As Integer = -1
 
     Private WithEvents Decoder As DecoderManager
+    Private clsVis As clsVisualization
 
     Public PlaylistList As New List(Of StreamInformations)
 
-    Private clsVis As clsVisualization
+    Private nCurrentPlayIndex As Integer = INVALID_INDEX
     Private dblSamples() As Double
 
-    Private nCurrentPlayIndex As Integer = INVALID_INDEX
+    Private Delegate Sub UpdateUIDelegate(ByRef Info As StreamInformations)
+    Private Delegate Sub UpdatePlaylistEntryDelegate(ByRef info As StreamInformations, ByRef Index As Integer)
 
-    Delegate Sub UpdateTrackBarDelegate()
-    Delegate Sub UpdateTitleDelegate(ByVal title As String)
-    Delegate Sub UpdatePlaylistHighlightDelegate()
+    Private UpdateUI As New UpdateUIDelegate(AddressOf UpdateUIProc)
+    Private UpdatePlaylistEntry As New UpdatePlaylistEntryDelegate(AddressOf UpdatePlaylistEntryProc)
 
+#Region "Form Events"
     Private Sub AMPlayer_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         ' Create decoder
         Decoder = New DecoderManager
@@ -63,145 +65,7 @@ Public Class AMPlayer
     End Sub
 
     Private Sub TrackbarTimer_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TrackbarTimer.Tick
-        Dim nPosition As Long
-
-        nPosition = Decoder.Position
-
-        PositionTrackbar.Value = nPosition
-
-        With TimeSpan.FromSeconds(nPosition)
-            TimeStripLabel.Text = Format(.TotalHours, "0") & ":" & Fix(.TotalMinutes).ToString & ":" & Format(.Seconds, "00")
-        End With
-
-    End Sub
-
-    Private Sub control_End_Of_Stream() Handles Decoder.End_Of_Stream
-        NextItemHelper()
-    End Sub
-
-    Private Sub UpdatePositionTrackBar()
-        ' Update trackbar max value
-        PositionTrackbar.Maximum = Decoder.Duration
-    End Sub
-
-    Private Sub UpdateTitleSafe(ByVal title As String)
-        Me.Text = "AMPlayer - " & title
-    End Sub
-
-    Private Sub Control_File_Opened(ByVal info As StreamInformations) Handles Decoder.File_Opened
-
-        Dim UpdateTrackbar As New UpdateTrackBarDelegate(AddressOf UpdatePositionTrackBar)
-        Dim UpdateTitle As New UpdateTitleDelegate(AddressOf UpdateTitleSafe)
-
-        ' Thread Safe update trackbar
-        PositionTrackbar.Invoke(UpdateTrackbar)
-
-        ' Update bottom status label
-        StatusLabel.Text = info.Samplerate & "Hz - " & info.Channels & " channels - " & info.BitsPerSample & " bits"
-
-        ' Thread safe update title
-        Me.Invoke(UpdateTitle, info.FileName)
-
-    End Sub
-
-    Private Sub control_Status_Charged(ByVal status As Status) Handles Decoder.Status_Charged
-        Select Case status
-            Case Status.PLAYING
-                VisualizationTimer.Enabled = True
-                TrackbarTimer.Enabled = True
-            Case Status.STOPPED
-                Dim UpdateTrackbar As New UpdateTrackBarDelegate(AddressOf UpdatePositionTrackBar)
-
-                VisualizationTimer.Enabled = True
-                TrackbarTimer.Enabled = False
-
-                ' Thread Safe update trackbar
-                PositionTrackbar.Invoke(UpdateTrackbar)
-                With TimeSpan.FromSeconds(0)
-                    TimeStripLabel.Text = Format(.TotalHours, "0") + ":" + Fix(.TotalMinutes).ToString + ":" + Format(.Seconds, "00")
-                End With
-
-            Case Status.PAUSING
-                VisualizationTimer.Enabled = False
-                TrackbarTimer.Enabled = False
-        End Select
-    End Sub
-
-
-    ' Safe open file dialog using STA thread
-    Public Sub AddMultipleFileToPlaylist()
-        Dim SafeDialog As New SafeFileDialog
-        Dim Results() As String
-        Dim FilePath As String
-        Dim Info As StreamInformations
-
-        Results = SafeDialog.OpenMultipleFiles("Supported Files|" & Decoder.GetSupportedExtension)
-
-        If Results IsNot Nothing Then
-
-            For i As Integer = 0 To Results.Length - 1
-                FilePath = Results(i)
-
-                ' Add file to list of Playlist
-                Info = New StreamInformations
-                Info.FillBasicFileInfo(FilePath)
-                Info.DurationInMs = 0
-
-                PlaylistList.Add(Info)
-
-                ' Add files to Playlist
-                Playlist.AddRow(IO.Path.GetFileNameWithoutExtension(FilePath),
-                                "0:00")
-
-
-            Next
-
-            ' Update playlist
-            Playlist.UpdateRowGraphics()
-            Playlist.UpdateScrollbars()
-        End If
-    End Sub
-
-    Private Sub AddFolderToPlaylist()
-        Dim SafeDialog As New SafeFileDialog
-        Dim Result As String
-        Dim Info As StreamInformations
-
-        ' Opend folder selection dialog (STA thread)
-        Result = SafeDialog.SelectFolder()
-
-        ' Check if result is valid
-        If (Result <> "") And (Decoder IsNot Nothing) Then
-            Dim Files() As String
-            Dim FilePath As String
-            Dim SupportedExtensions As String = Decoder.GetSupportedExtension
-
-            ' Get all files in the selected directory
-            Files = IO.Directory.GetFiles(Result, "*.*")
-
-            ' Filter for supported extensions
-            For i As Integer = 0 To Files.Length - 1
-                If SupportedExtensions.Contains(IO.Path.GetExtension(Files(i).ToLower)) Then
-
-                    FilePath = Files(i)
-
-                    ' Add file to list of Playlist
-                    Info = New StreamInformations
-                    Info.FillBasicFileInfo(FilePath)
-                    Info.DurationInMs = 0
-
-                    PlaylistList.Add(Info)
-
-                    ' Add files to Playlist
-                    Playlist.AddRow(IO.Path.GetFileNameWithoutExtension(FilePath),
-                                    "0:00")
-                End If
-            Next
-
-            ' Update playlist
-            Playlist.UpdateRowGraphics()
-            Playlist.UpdateScrollbars()
-        End If
+        UpdatePositionAndTimeLabel(Decoder.Position)
     End Sub
 
     Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
@@ -237,44 +101,6 @@ Public Class AMPlayer
         frmCd.Dispose()
     End Sub
 
-    Private Sub AddCdToPlaylist(ByVal drive As Char)
-        Dim cdrom As New CDDrive
-        Dim nDuration As Long
-        Dim strDuration As String
-        Dim Info As StreamInformations
-
-        ' Open cd
-        If cdrom.Open(drive) = True Then
-            If cdrom.Refresh() = True Then
-                For i As Integer = 1 To cdrom.GetNumAudioTracks
-
-                    ' Add in the list in a format C: - 1.cda
-                    Info = New StreamInformations
-                    Info.FileLocation = drive & "-" & i.ToString & ".cda"
-
-                    ' Calculate duration of each track( 44100kz at 16bits 2 channels)
-                    nDuration = cdrom.GetTrackLength(i) * 2352 \ 176400
-                    Info.DurationInMs = nDuration * 1000
-
-                    With TimeSpan.FromSeconds(nDuration)
-                        strDuration = Fix(.Minutes) & ":" & Format(.Seconds, "00")
-                    End With
-
-                    PlaylistList.Add(Info)
-                    Playlist.AddRow("CD Track: " & i.ToString, strDuration)
-                Next
-            End If
-
-            ' Free resources
-            cdrom.Close()
-            cdrom = Nothing
-
-            ' Update playlist
-            Playlist.UpdateRowGraphics()
-            Playlist.UpdateScrollbars()
-        End If
-    End Sub
-
     Private Sub AddFilesToPlaylistToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AddFilesToPlaylistToolStripMenuItem.Click
         AddMultipleFileToPlaylist()
     End Sub
@@ -297,38 +123,13 @@ Public Class AMPlayer
     End Sub
 
     Private Sub Playlist_ItemDoubleClick(index As Integer) Handles Playlist.ItemDoubleClick
-        Dim info As StreamInformations
-        Dim StrDuration As String
 
         If Decoder.OpenFile(PlaylistList(index).FileLocation) = True Then
             PlayHelper()
             nCurrentPlayIndex = index
 
-            ' Get current opened file stream informations
-            info = Decoder.CurrentFileStreamInfo
-
-            ' Update current item
-            PlaylistList(index) = info
-
-            ' Calculate informations
-            With TimeSpan.FromMilliseconds(info.DurationInMs)
-                If .Hours <> 0 Then
-                    StrDuration = Fix(.Hours) & ":" & Fix(.Minutes) & ":" & Format(.Seconds, "00")
-                Else
-                    StrDuration = Fix(.Minutes) & ":" & Format(.Seconds, "00")
-                End If
-
-            End With
-
-            ' Update playlist
-            If info.Artist <> "" And info.Title <> "" Then
-                Playlist.EditRow(index, info.Artist & " - " & info.Title, StrDuration)
-            Else
-                Playlist.EditRow(index, info.FileName, StrDuration)
-            End If
-
-            ' Highlight playing Index
-            UpdatePlaylistHighlight()
+            ' Thread Safe Invocation
+            Invoke(UpdatePlaylistEntry, Decoder.CurrentFileStreamInfo, index)
         End If
     End Sub
 
@@ -338,8 +139,9 @@ Public Class AMPlayer
                 PlayHelper()
                 nCurrentPlayIndex = index
 
-                ' Highlight playing Index
-                UpdatePlaylistHighlight()
+
+                ' Thread Safe Invocation
+                Invoke(UpdatePlaylistEntry, Decoder.CurrentFileStreamInfo, index)
             End If
         End If
     End Sub
@@ -368,134 +170,11 @@ Public Class AMPlayer
     End Sub
 
     Private Sub ClearAllToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ClearAllToolStripMenuItem.Click
-        ' Remove all items
-        PlaylistList.Clear()
-        Playlist.RemoveAllRows()
-
-        ' Draw playlist and update scrollbars
-        Playlist.UpdateRowGraphics()
-        Playlist.UpdateScrollbars()
-
-        ' Reset play index
-        nCurrentPlayIndex = INVALID_INDEX
+        DeleteSelectedItems()
     End Sub
 
     Private Sub ClearSelectedItemsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ClearSelectedItemsToolStripMenuItem.Click
-        Dim selectedItems As List(Of Integer)
-
-        ' Get selected items
-        selectedItems = Playlist.SelectedItems()
-
-        ' If no elements are selected exit
-        If selectedItems.Count = 0 Then Exit Sub
-
-        For i As Integer = 0 To selectedItems.Count - 1
-            Playlist.RemoveRow(selectedItems(i))
-            PlaylistList.RemoveAt(selectedItems(i))
-        Next
-
-        ' Draw playlist and update scrollbars
-        Playlist.UpdateRowGraphics()
-        Playlist.UpdateScrollbars()
-
-        ' Update Play Index
-        If selectedItems.Count <> 0 Then
-            nCurrentPlayIndex = 0
-        Else
-            nCurrentPlayIndex = INVALID_INDEX
-        End If
-    End Sub
-
-
-
-    Private Sub PlayHelper()
-        If Decoder Is Nothing Then Exit Sub
-
-        If Decoder.Status <> Status.PLAYING Then
-            Decoder.Status = Status.PLAYING
-        End If
-    End Sub
-
-    Private Sub PauseHelper()
-        If Decoder Is Nothing Then Exit Sub
-
-        If Decoder.Status <> Status.PAUSING Then
-            Decoder.Status = Status.PAUSING
-        End If
-    End Sub
-
-    Private Sub StopHelper()
-        If Decoder Is Nothing Then Exit Sub
-
-        If Decoder.Status <> Status.STOPPED Then
-            Decoder.Status = Status.STOPPED
-        End If
-    End Sub
-
-    Private Sub NextItemHelper()
-        Dim UpdateHighlight As New UpdatePlaylistHighlightDelegate(AddressOf UpdatePlaylistHighlight)
-
-        If nCurrentPlayIndex <> INVALID_INDEX Then
-            If nCurrentPlayIndex < PlaylistList.Count - 1 Then
-
-                nCurrentPlayIndex += 1
-
-                If Decoder.OpenFile(PlaylistList(nCurrentPlayIndex).FileLocation) = True Then
-                    PlayHelper()
-                End If
-            Else
-                StopHelper()
-                nCurrentPlayIndex = INVALID_INDEX
-                VisualizationTimer.Enabled = False
-                TrackbarTimer.Enabled = False
-            End If
-
-            ' Thread Safe update
-            Playlist.Invoke(UpdateHighlight)
-        End If
-    End Sub
-
-    Private Sub PreviousItemHelper()
-        Dim UpdateHighlight As New UpdatePlaylistHighlightDelegate(AddressOf UpdatePlaylistHighlight)
-
-        If nCurrentPlayIndex <> INVALID_INDEX Then
-            If nCurrentPlayIndex > 0 Then
-                nCurrentPlayIndex -= 1
-
-                If Decoder.OpenFile(PlaylistList(nCurrentPlayIndex).FileLocation) = True Then
-                    PlayHelper()
-                End If
-
-            Else
-                StopHelper()
-                nCurrentPlayIndex = INVALID_INDEX
-                VisualizationTimer.Enabled = False
-                TrackbarTimer.Enabled = False
-            End If
-
-            ' Thread Safe update
-            Playlist.Invoke(UpdateHighlight)
-        End If
-
-    End Sub
-
-    Private Sub AddEffectsToMenu()
-        If Decoder IsNot Nothing Then
-            For i As Integer = 0 To Decoder.EffectsCount - 1
-                Dim ToolStripEffect As New ToolStripMenuItem
-
-                ' Name of the effect
-                ToolStripEffect.Text = Decoder.Effects(i).Name
-
-                ' Add the word "Effect" and i value
-                ToolStripEffect.Name = "Effect" & i.ToString
-
-                ' Add to Menù and add event handler
-                EffectsToolStripMenuItem.DropDownItems.Add(ToolStripEffect)
-                AddHandler ToolStripEffect.Click, AddressOf EffectsToolStrip_Click
-            Next
-
-        End If
+        DeleteAllItems()
     End Sub
 
     Private Sub EffectsToolStrip_Click(sender As Object, e As EventArgs)
@@ -539,6 +218,394 @@ Public Class AMPlayer
     End Sub
 
     Private Sub ViewFileTagsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ViewFileTagsToolStripMenuItem.Click
+        OpenTagsDialog()
+    End Sub
+
+    Private Sub TranscodeFilesToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles TranscodeFilesToolStripMenuItem.Click
+        OpenTranscodeDialog()
+    End Sub
+
+    Private Sub AddFolderToPlaylistToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AddFolderToPlaylistToolStripMenuItem.Click
+        AddFolderToPlaylist()
+    End Sub
+
+    Private Sub OpenFileToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenFileToolStripMenuItem.Click
+        OpenSingleFile()
+    End Sub
+
+    Private Sub GetFullDetailsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GetFullDetailsToolStripMenuItem.Click
+        If Decoder IsNot Nothing Then
+
+            ' If status is playing, ask to user if stop playback
+            ' to get full details
+            If Decoder.Status <> Status.STOPPED Then
+                Dim result As DialogResult
+
+                result =
+                MessageBox.Show("To get full details, playback must stop. Continue?",
+                                Name,
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Question,
+                                MessageBoxDefaultButton.Button1)
+
+                ' If no, exit from function
+                If result = DialogResult.Yes Then
+                    GetFullDetailsOnPlaylist()
+                End If
+            Else
+                GetFullDetailsOnPlaylist()
+            End If
+        End If
+    End Sub
+
+    Private Sub PositionTrackbar_SeekDone(sender As Object, e As Winamp.Components.WinampTrackBarSeekEventArgs) Handles PositionTrackbar.SeekDone
+        If Decoder IsNot Nothing Then
+            If Decoder.Status = Status.PLAYING Then
+                Decoder.Position = e.Value
+            End If
+        End If
+    End Sub
+
+    Private Sub PositionTrackbar_ValueChanged(sender As Object, e As Winamp.Components.WinampTrackBarValueChangedEventArgs) Handles PositionTrackbar.ValueChanged
+        Select Case e.ChangeSource
+            Case Winamp.Components.WinampTrackBar.WinampTrackBarValueChangeSource.TrackClick
+                If Decoder IsNot Nothing Then
+                    If Decoder.Status = Status.PLAYING Then
+                        Decoder.Position = e.Value
+                    End If
+                End If
+        End Select
+    End Sub
+
+
+#End Region
+
+#Region "Decoder Events"
+
+    Private Sub Decoder_End_Of_Stream() Handles Decoder.End_Of_Stream
+        NextItemHelper()
+    End Sub
+
+    Private Sub Decoder_File_Opened(ByVal info As StreamInformations) Handles Decoder.File_Opened
+        Invoke(UpdateUI, info)
+    End Sub
+
+    Private Sub Decoder_Status_Charged(ByVal status As Status) Handles Decoder.Status_Charged
+        Select Case status
+            Case Status.PLAYING
+                VisualizationTimer.Enabled = True
+                TrackbarTimer.Enabled = True
+            Case Status.STOPPED
+                VisualizationTimer.Enabled = True
+                TrackbarTimer.Enabled = False
+
+                Invoke(UpdateUI, Decoder.CurrentFileStreamInfo)
+
+            Case Status.PAUSING
+                VisualizationTimer.Enabled = False
+                TrackbarTimer.Enabled = False
+        End Select
+    End Sub
+
+#End Region
+
+#Region "Form Functions"
+
+    Private Sub DeleteSelectedItems()
+        ' Remove all items
+        PlaylistList.Clear()
+        Playlist.RemoveAllRows()
+
+        ' Draw playlist and update scrollbars
+        Playlist.UpdateRowGraphics()
+        Playlist.UpdateScrollbars()
+
+        ' Reset play index
+        nCurrentPlayIndex = INVALID_INDEX
+    End Sub
+
+    Private Sub DeleteAllItems()
+        Dim selectedItems As List(Of Integer)
+
+        ' Get selected items
+        selectedItems = Playlist.SelectedItems()
+
+        ' If no elements are selected exit
+        If selectedItems.Count = 0 Then Exit Sub
+
+        For i As Integer = 0 To selectedItems.Count - 1
+            Playlist.RemoveRow(selectedItems(i))
+            PlaylistList.RemoveAt(selectedItems(i))
+        Next
+
+        ' Draw playlist and update scrollbars
+        Playlist.UpdateRowGraphics()
+        Playlist.UpdateScrollbars()
+
+        ' Update Play Index
+        If selectedItems.Count <> 0 Then
+            nCurrentPlayIndex = 0
+        Else
+            nCurrentPlayIndex = INVALID_INDEX
+        End If
+    End Sub
+    Private Sub UpdateUIProc(ByRef Info As StreamInformations)
+        ' Update trackbar max value
+        If PositionTrackbar.Maximum <> Decoder.Duration Then
+            PositionTrackbar.Maximum = Decoder.Duration
+        End If
+
+        If Info IsNot Nothing Then
+            Me.Text = "AMPlayer - " & Info.FileName
+
+            StatusLabel.Text = Info.Samplerate & "Hz - " &
+                                   Info.Channels & " channels - " &
+                                   Info.BitsPerSample & " bits"
+        End If
+
+        If Decoder.Status = Status.STOPPED Then
+            UpdatePositionAndTimeLabel(0)
+        End If
+
+
+    End Sub
+
+    Private Sub UpdatePositionAndTimeLabel(ByVal Value As Long)
+        If Value < 0 Then Exit Sub
+
+        PositionTrackbar.Value = Value
+
+        With TimeSpan.FromSeconds(Value)
+            TimeStripLabel.Text = Format(.TotalHours, "0") &
+                                  ":" & Fix(.TotalMinutes).ToString &
+                                  ":" & Format(.Seconds, "00")
+        End With
+    End Sub
+
+    ' Safe open file dialog using STA thread
+    Public Sub AddMultipleFileToPlaylist()
+        Dim SafeDialog As New SafeFileDialog
+        Dim Results() As String
+
+        Results = SafeDialog.OpenMultipleFiles("Supported Files|" & Decoder.GetSupportedExtension)
+
+        If Results IsNot Nothing Then
+
+            For i As Integer = 0 To Results.Length - 1
+                AddFileToPlaylist(Results(i))
+            Next
+
+            ' Update playlist
+            UpdatePlaylist()
+        End If
+    End Sub
+
+    Private Sub AddFolderToPlaylist()
+        Dim SafeDialog As New SafeFileDialog
+        Dim Result As String
+
+
+        ' Open folder selection dialog (STA thread)
+        Result = SafeDialog.SelectFolder()
+
+        ' Check if result is valid
+        If (Result <> "") And (Decoder IsNot Nothing) Then
+            Dim Files() As String
+            Dim SupportedExtensions As String = Decoder.GetSupportedExtension
+
+            ' Get all files in the selected directory
+            Files = IO.Directory.GetFiles(Result, "*.*")
+
+            ' Filter for supported extensions
+            For i As Integer = 0 To Files.Length - 1
+                If SupportedExtensions.Contains(IO.Path.GetExtension(Files(i).ToLower)) Then
+                    AddFileToPlaylist(Files(i))
+                End If
+            Next
+
+            UpdatePlaylist()
+        End If
+    End Sub
+
+    Private Sub UpdatePlaylist()
+        ' Update playlist
+        Playlist.UpdateRowGraphics()
+        Playlist.UpdateScrollbars()
+    End Sub
+
+    Private Sub AddFileToPlaylist(ByVal FilePath As String)
+        ' Add file to list of Playlist
+        Dim Info As StreamInformations = New StreamInformations
+
+        Info.FillBasicFileInfo(FilePath)
+        Info.DurationInMs = 0
+
+        PlaylistList.Add(Info)
+
+        ' Add files to Playlist
+        Playlist.AddRow(IO.Path.GetFileNameWithoutExtension(FilePath),
+                        "0:00")
+
+    End Sub
+
+    Private Sub AddCdToPlaylist(ByVal drive As Char)
+        Dim cdrom As New CDDrive
+        Dim nDuration As Long
+        Dim strDuration As String
+        Dim Info As StreamInformations
+
+        ' Open cd
+        If cdrom.Open(drive) = True Then
+            If cdrom.Refresh() = True Then
+                For i As Integer = 1 To cdrom.GetNumAudioTracks
+
+                    ' Add in the list in a format C: - 1.cda
+                    Info = New StreamInformations
+                    Info.FileLocation = drive & "-" & i.ToString & ".cda"
+
+                    ' Calculate duration of each track( 44100kz at 16bits 2 channels)
+                    nDuration = cdrom.GetTrackLength(i) * 2352 \ 176400
+                    Info.DurationInMs = nDuration * 1000
+
+                    With TimeSpan.FromSeconds(nDuration)
+                        strDuration = Fix(.Minutes) & ":" & Format(.Seconds, "00")
+                    End With
+
+                    PlaylistList.Add(Info)
+                    Playlist.AddRow("CD Track: " & i.ToString, strDuration)
+                Next
+            End If
+
+            ' Free resources
+            cdrom.Close()
+            cdrom = Nothing
+
+            ' Update playlist
+            UpdatePlaylist()
+        End If
+    End Sub
+
+    Public Sub UpdatePlaylistEntryProc(ByRef info As StreamInformations, ByRef Index As Integer)
+        Dim StrDuration As String
+
+        ' Check if we have a valid idex
+        If Index = INVALID_INDEX Then Exit Sub
+
+        ' Update current item
+        PlaylistList(Index) = info
+
+        ' Calculate informations
+        With TimeSpan.FromMilliseconds(info.DurationInMs)
+            If .Hours <> 0 Then
+                StrDuration = Fix(.Hours) & ":" & Fix(.Minutes) & ":" & Format(.Seconds, "00")
+            Else
+                StrDuration = Fix(.Minutes) & ":" & Format(.Seconds, "00")
+            End If
+
+        End With
+
+        ' Update playlist
+        If info.Artist <> "" And info.Title <> "" Then
+            Playlist.EditRow(Index, info.Artist & " - " & info.Title, StrDuration)
+        Else
+            Playlist.EditRow(Index, info.FileName, StrDuration)
+        End If
+
+        ' Highlight playing Index
+        UpdatePlaylistHighlight()
+    End Sub
+
+    Private Sub PlayHelper()
+        If Decoder Is Nothing Then Exit Sub
+
+        If Decoder.Status <> Status.PLAYING Then
+            Decoder.Status = Status.PLAYING
+        End If
+    End Sub
+
+    Private Sub PauseHelper()
+        If Decoder Is Nothing Then Exit Sub
+
+        If Decoder.Status <> Status.PAUSING Then
+            Decoder.Status = Status.PAUSING
+        End If
+    End Sub
+
+    Private Sub StopHelper()
+        If Decoder Is Nothing Then Exit Sub
+
+        If Decoder.Status <> Status.STOPPED Then
+            Decoder.Status = Status.STOPPED
+        End If
+    End Sub
+
+    Private Sub NextItemHelper()
+
+        If nCurrentPlayIndex <> INVALID_INDEX Then
+            If nCurrentPlayIndex < PlaylistList.Count - 1 Then
+
+                nCurrentPlayIndex += 1
+
+                If Decoder.OpenFile(PlaylistList(nCurrentPlayIndex).FileLocation) = True Then
+                    PlayHelper()
+                End If
+            Else
+                StopHelper()
+                nCurrentPlayIndex = INVALID_INDEX
+                VisualizationTimer.Enabled = True
+                TrackbarTimer.Enabled = False
+            End If
+
+            ' Thread Safe Invocation
+            Invoke(UpdatePlaylistEntry, Decoder.CurrentFileStreamInfo, nCurrentPlayIndex)
+            Invoke(UpdateUI, Decoder.CurrentFileStreamInfo)
+        End If
+    End Sub
+
+    Private Sub PreviousItemHelper()
+
+        If nCurrentPlayIndex <> INVALID_INDEX Then
+            If nCurrentPlayIndex > 0 Then
+                nCurrentPlayIndex -= 1
+
+                If Decoder.OpenFile(PlaylistList(nCurrentPlayIndex).FileLocation) = True Then
+                    PlayHelper()
+                End If
+
+            Else
+                StopHelper()
+                nCurrentPlayIndex = INVALID_INDEX
+                VisualizationTimer.Enabled = True
+                TrackbarTimer.Enabled = False
+            End If
+
+            ' Thread Safe Invocation
+            Invoke(UpdatePlaylistEntry, Decoder.CurrentFileStreamInfo, nCurrentPlayIndex)
+            Invoke(UpdateUI, Decoder.CurrentFileStreamInfo)
+        End If
+
+    End Sub
+
+    Private Sub AddEffectsToMenu()
+        If Decoder IsNot Nothing Then
+            For i As Integer = 0 To Decoder.EffectsCount - 1
+                Dim ToolStripEffect As New ToolStripMenuItem
+
+                ' Name of the effect
+                ToolStripEffect.Text = Decoder.Effects(i).Name
+
+                ' Add the word "Effect" and i value
+                ToolStripEffect.Name = "Effect" & i.ToString
+
+                ' Add to Menù and add event handler
+                EffectsToolStripMenuItem.DropDownItems.Add(ToolStripEffect)
+                AddHandler ToolStripEffect.Click, AddressOf EffectsToolStrip_Click
+            Next
+
+        End If
+    End Sub
+
+    Private Sub OpenTagsDialog()
         Dim Info As StreamInformations
         Dim TagsDialog As New frmTagDialog
 
@@ -564,7 +631,7 @@ Public Class AMPlayer
         End If
     End Sub
 
-    Private Sub TranscodeFilesToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles TranscodeFilesToolStripMenuItem.Click
+    Private Sub OpenTranscodeDialog()
         Dim frmTransc As New frmTranscode
 
         If Decoder IsNot Nothing Then
@@ -575,14 +642,6 @@ Public Class AMPlayer
 
         frmTransc.ShowDialog()
         frmTransc.Dispose()
-    End Sub
-
-    Private Sub AddFolderToPlaylistToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AddFolderToPlaylistToolStripMenuItem.Click
-        AddFolderToPlaylist()
-    End Sub
-
-    Private Sub OpenFileToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenFileToolStripMenuItem.Click
-        OpenSingleFile()
     End Sub
 
     Public Sub OpenSingleFile()
@@ -646,32 +705,7 @@ Public Class AMPlayer
         Next
 
         ' Redraw playlist
-        Playlist.UpdateRowGraphics()
-    End Sub
-
-    Private Sub GetFullDetailsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GetFullDetailsToolStripMenuItem.Click
-        If Decoder IsNot Nothing Then
-
-            ' If status is playing, ask to user if stop playback
-            ' to get full details
-            If Decoder.Status <> Status.STOPPED Then
-                Dim result As DialogResult
-
-                result =
-                MessageBox.Show("To get full details, playback must stop. Continue?",
-                                Name,
-                                MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Question,
-                                MessageBoxDefaultButton.Button1)
-
-                ' If no, exit from function
-                If result = DialogResult.Yes Then
-                    GetFullDetailsOnPlaylist()
-                End If
-            Else
-                GetFullDetailsOnPlaylist()
-            End If
-        End If
+        UpdatePlaylist()
     End Sub
 
     Private Sub UpdatePlaylistHighlight()
@@ -703,6 +737,7 @@ Public Class AMPlayer
         If PlsManager.Open(FilePath, PlaylistManager.PlaylistMode.Read) = True Then
 
             For i As Integer = 0 To PlsManager.ReadCount - 1
+
 
                 ' Read Playlist informations
                 Info = PlsManager.ReadIndex(i)
@@ -741,56 +776,10 @@ Public Class AMPlayer
             PlsManager.Dispose()
 
             ' Redraw Playlist
-            Playlist.UpdateScrollbars()
-            Playlist.UpdateRowGraphics()
+            UpdatePlaylist()
         End If
 
     End Sub
 
-    Private Sub OpenPlaylistToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenPlaylistToolStripMenuItem.Click
-        OpenPlaylistFile()
-    End Sub
-
-    Private Sub PositionTrackbar_SeekDone(sender As Object, e As Winamp.Components.WinampTrackBarSeekEventArgs) Handles PositionTrackbar.SeekDone
-        If Decoder IsNot Nothing Then
-            If Decoder.Status = Status.PLAYING Then
-                Decoder.Position = e.Value
-            End If
-        End If
-    End Sub
-
-
-
-    Private Sub SavePlaylistToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SavePlaylistToolStripMenuItem.Click
-        Dim SaveDialog As New SafeFileDialog
-        Dim PlsManager As New PlaylistManager
-
-        Dim FilePath As String
-
-        FilePath = SaveDialog.SaveSingleFile("Supported Playlist|" & PlsManager.GetPlaylistWriterExtensions)
-
-        If FilePath Is Nothing Then Exit Sub
-
-        If PlsManager.Open(FilePath, PlaylistManager.PlaylistMode.Write) = True Then
-
-            For i As Integer = 0 To PlaylistList.Count - 1
-                PlsManager.WriteLine(PlaylistList(i))
-            Next
-
-            PlsManager.Close()
-            PlsManager.Dispose()
-        End If
-    End Sub
-
-    Private Sub PositionTrackbar_ValueChanged(sender As Object, e As Winamp.Components.WinampTrackBarValueChangedEventArgs) Handles PositionTrackbar.ValueChanged
-        Select Case e.ChangeSource
-            Case Winamp.Components.WinampTrackBar.WinampTrackBarValueChangeSource.TrackClick
-                If Decoder IsNot Nothing Then
-                    If Decoder.Status = Status.PLAYING Then
-                        Decoder.Position = e.Value
-                    End If
-                End If
-
-        End Select
-    End Sub
+#End Region
 End Class
