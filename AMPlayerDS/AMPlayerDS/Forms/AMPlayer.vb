@@ -352,7 +352,12 @@ Public Class AMPlayer
     Private Sub UpdateUIProc(ByRef Info As StreamInformations)
         ' Update trackbar max value
         If PositionTrackbar.Maximum <> Decoder.Duration Then
-            PositionTrackbar.Maximum = Decoder.Duration
+
+            ' Fix "Display Error in the trackbar at position 0 when playback end" issue
+            If Decoder.Duration > 0 Then
+                PositionTrackbar.Maximum = Decoder.Duration
+            End If
+
         End If
 
         If Info IsNot Nothing Then
