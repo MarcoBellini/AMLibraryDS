@@ -3,13 +3,18 @@
 ' Very basic Customized listview 
 ' In design mode you can edit color,size and font
 
-' Version: 0.02
+' Version: 0.03
 ' Developed by Marco Bellini
 
 ' 0.02
 ' Added multiple row selection
 ' Removed multithreaded drawing
 ' Fixed Header resize clip value
+
+' 0.03
+' Improved Column resizing
+' Fixed some row text clipping
+' Fixed problem With incorrect text cutting On some lines
 
 Public Class CustomListViewControl
 
@@ -26,11 +31,10 @@ Public Class CustomListViewControl
         Public Width As Integer
         Public IsMouseHover As Boolean
         Public IsMouseDown As Boolean
-        Public IsResizing As Boolean
     End Class
 
     'Const
-    Private Const RESIZE_AREA_MAGIN As Integer = 20 'px
+    Private Const RESIZE_AREA_MAGIN As Integer = 15 'px
     Private Const MINUMUM_COLUMN_WIDTH As Integer = 120 'px
     Private Const ALLOW_MULTIPLE_SELECTIONS As Boolean = True
 
@@ -63,7 +67,13 @@ Public Class CustomListViewControl
 
     ' Booleans
     Private bCanDraw As Boolean = False
-    Private bMouseDown As Boolean = False
+    Private bMouseDownOnHeader As Boolean = False
+    Private bMouseDownOnList As Boolean = False
+    Private bHeaderResizeMode As Boolean = False
+
+    ' Used for resizing
+    Private nResizeColumnIndex As Integer = 0
+    Private nResizeColumnStartWidth As Integer = 0
 
     'Events
     Public Event ItemDoubleClick(ByVal index As Int32)
@@ -238,12 +248,12 @@ Public Class CustomListViewControl
         PaintData()
 
         ' Used in mouse move
-        bMouseDown = True
+        bMouseDownOnList = True
     End Sub
 
     ' Allow multiple selections only if ALLOW_MULTIPLE_SELECTIONS is set true
     Private Sub PictureBox_List_MouseMove(sender As Object, e As MouseEventArgs) Handles PictureBox_List.MouseMove
-        If bMouseDown = True Then
+        If bMouseDownOnList = True Then
             Dim rect As Rectangle
             Dim mouse As POINT
             Dim nEndIndex, nStartIndex, nRowYCoord As Int32
@@ -296,7 +306,7 @@ Public Class CustomListViewControl
 
     Private Sub PictureBox_List_MouseUp(sender As Object, e As MouseEventArgs) Handles PictureBox_List.MouseUp
         ' Reset
-        bMouseDown = False
+        bMouseDownOnList = False
     End Sub
 
     ' Detect Mouse Double Click on list picture box
@@ -362,58 +372,58 @@ Public Class CustomListViewControl
         mouse = GetMousePosition()
         nCoordX = 0
 
-        For i As Integer = 0 To ColumnsArray.Count - 1
+        If bHeaderResizeMode = True Then
 
-            With rect
-                rect.X = nCoordX
-                rect.Y = 0
-                rect.Width = ColumnsArray(i).Width
-                rect.Height = PictureBox_Header.Height
-            End With
+            ColumnsArray(nResizeColumnIndex).Width = mouse.X - nResizeColumnStartWidth
 
-            ' Find the colum where mouse is on
-            If (mouse.X > rect.Left) And (mouse.Y > rect.Top) And (mouse.X < rect.Right) And (mouse.Y < rect.Bottom) Then
-                ColumnsArray(i).IsMouseHover = True
-            Else
-                ColumnsArray(i).IsMouseHover = False
+            ' Clip low values
+            If ColumnsArray(nResizeColumnIndex).Width < MINUMUM_COLUMN_WIDTH Then
+                ColumnsArray(nResizeColumnIndex).Width = MINUMUM_COLUMN_WIDTH
             End If
 
-            ' Check if mouse is on resize area
-            If (mouse.X > rect.Right - RESIZE_AREA_MAGIN) And (mouse.X < rect.Right + RESIZE_AREA_MAGIN) Then
-                ColumnsArray(i).IsResizing = True
+            ShowResizing = True
+        Else
 
-                ' If left mouse button is pressed resize column
-                If bMouseDown = True Then
-                    ' Remove the width of previous column
-                    ColumnsArray(i).Width = mouse.X - nCoordX
+            For i As Integer = 0 To ColumnsArray.Count - 1
 
-                    ' Clip low values
-                    If ColumnsArray(i).Width < MINUMUM_COLUMN_WIDTH Then
-                        ColumnsArray(i).Width = MINUMUM_COLUMN_WIDTH
+                With rect
+                    rect.X = nCoordX
+                    rect.Y = 0
+                    rect.Width = ColumnsArray(i).Width
+                    rect.Height = PictureBox_Header.Height
+                End With
+
+
+
+                ' Check if mouse is on resize area
+                If (mouse.X > rect.Right - RESIZE_AREA_MAGIN) And
+                    (mouse.X < rect.Right + RESIZE_AREA_MAGIN) And
+                    (mouse.Y > rect.Top) And
+                    (mouse.Y < rect.Bottom) Then
+
+                    ShowResizing = True
+                Else
+
+                    ' Find the colum where mouse is on
+                    If (mouse.X > rect.Left) And (mouse.Y > rect.Top) And (mouse.X < rect.Right) And (mouse.Y < rect.Bottom) Then
+                        ColumnsArray(i).IsMouseHover = True
+                    Else
+                        ColumnsArray(i).IsMouseHover = False
                     End If
-
-                    ' Update row width
-                    PaintData()
                 End If
-            Else
-                ColumnsArray(i).IsResizing = False
-            End If
 
-            ' If there is one column resizing then show mouse
-            ShowResizing = ShowResizing Or ColumnsArray(i).IsResizing
 
-            nCoordX = nCoordX + ColumnsArray(i).Width
-        Next
+                nCoordX = nCoordX + ColumnsArray(i).Width
+            Next
+        End If
 
-        ' Show resizing on mouse
         If ShowResizing = True Then
             Me.Cursor = Cursors.VSplit
         Else
-            If Me.Cursor = Cursors.VSplit Then
-                Me.Cursor = Cursors.Default
-            End If
+            Me.Cursor = Cursors.Default
         End If
 
+        ' Update row width
         PaintData()
     End Sub
 
@@ -451,6 +461,19 @@ Public Class CustomListViewControl
                 rect.Height = PictureBox_Header.Height
             End With
 
+            ' Check if mouse is on resize area
+            If (mouse.X > rect.Right - RESIZE_AREA_MAGIN) And
+                (mouse.X < rect.Right + RESIZE_AREA_MAGIN) And
+                (mouse.Y > rect.Top) And
+                (mouse.Y < rect.Bottom) Then
+
+                ' Resize header 
+                bHeaderResizeMode = True
+                nResizeColumnIndex = i
+                nResizeColumnStartWidth = nCoordX
+                Me.Cursor = Cursors.VSplit
+            End If
+
             ' Find which column has mouse with button pressed
             If (mouse.X > rect.Left) And (mouse.Y > rect.Top) And (mouse.X < rect.Right) And (mouse.Y < rect.Bottom) Then
                 ColumnsArray(i).IsMouseDown = True
@@ -458,14 +481,13 @@ Public Class CustomListViewControl
                 ColumnsArray(i).IsMouseDown = False
             End If
 
-
             nCoordX = nCoordX + ColumnsArray(i).Width
         Next
 
+        bMouseDownOnHeader = True
+
         ' Update graphics
         PaintData()
-
-        bMouseDown = True
     End Sub
 
     ' Detect Mouse Up on header picture box
@@ -475,10 +497,16 @@ Public Class CustomListViewControl
             ColumnsArray(i).IsMouseDown = False
         Next
 
+        'Reset cursor
+        If Me.Cursor = Cursors.VSplit Then
+            Me.Cursor = Cursors.Default
+        End If
+
+        bHeaderResizeMode = False
+        bMouseDownOnHeader = False
+
         ' Update graphics
         PaintData()
-
-        bMouseDown = False
     End Sub
 
     ' Redraw on paint event
@@ -679,7 +707,7 @@ Public Class CustomListViewControl
             nStringWidth = TextRenderer.MeasureText(source, ItemFontProperty).Width
 
             ' Remove char to fit the size of text
-            While nStringWidth > nColumnWidth
+            While nStringWidth >= nColumnWidth
                 source = source.Remove(source.Length - 1, 1)
                 nStringWidth = TextRenderer.MeasureText(source, ItemFontProperty).Width
             End While
@@ -810,7 +838,6 @@ Public Class CustomListViewControl
             .Width = width
             .IsMouseDown = False
             .IsMouseHover = False
-            .IsResizing = False
         End With
 
         ColumnsArray.Add(tempColumn)

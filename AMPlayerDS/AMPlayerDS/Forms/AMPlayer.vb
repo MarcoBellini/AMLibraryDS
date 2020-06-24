@@ -1,12 +1,6 @@
 ' Winamp style trackbar source code:
 ' https://www.codeproject.com/Articles/997101/Custom-Winamp-Style-TrackBar-Slider
 Public Class AMPlayer
-
-    ' TODO: Update code (use Open file function helper)
-    ' Order functions
-    ' Add About form
-    ' Add Rip CD form
-
     Private Const INVALID_INDEX As Integer = -1
 
     Private WithEvents Decoder As DecoderManager
@@ -275,6 +269,14 @@ Public Class AMPlayer
                     End If
                 End If
         End Select
+    End Sub
+
+    Private Sub OpenPlaylistToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenPlaylistToolStripMenuItem.Click
+        OpenPlaylistFile()
+    End Sub
+
+    Private Sub SavePlaylistToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SavePlaylistToolStripMenuItem.Click
+        SavePlaylistFile()
     End Sub
 
 
@@ -785,6 +787,40 @@ Public Class AMPlayer
         End If
 
     End Sub
+
+    Private Sub SavePlaylistFile()
+        Dim OpenDialog As New SafeFileDialog
+        Dim PlsManager As New PlaylistManager
+
+        Dim FilePath As String
+
+        FilePath = OpenDialog.SaveSingleFile("Supported Playlist|" & PlsManager.GetPlaylistWriterExtensions)
+
+        ' If no file are selected, exit
+        If FilePath Is Nothing Then Exit Sub
+
+        If PlsManager.Open(FilePath, PlaylistManager.PlaylistMode.Write) = True Then
+
+            For i As Integer = 0 To PlaylistList.Count - 1
+
+                ' Write playlist line
+                If PlsManager.WriteLine(PlaylistList(i)) = False Then
+                    ' On error close
+                    MsgBox("Error writing playlist")
+                    PlsManager.Close()
+                    PlsManager.Dispose()
+                    Exit Sub
+                End If
+            Next
+
+            ' Free resources
+            PlsManager.Close()
+            PlsManager.Dispose()
+        End If
+
+    End Sub
+
+
 
 #End Region
 End Class

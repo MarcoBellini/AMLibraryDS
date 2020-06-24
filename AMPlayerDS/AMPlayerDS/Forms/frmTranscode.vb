@@ -255,4 +255,34 @@
         EnableUI()
         bTranscodeInProgress = False
     End Sub
+
+    Private Sub RipCDButton_Click(sender As Object, e As EventArgs) Handles RipCDButton.Click
+        Dim frmCd As New frmOpenCD()
+
+        ' Check if the user decided to open drive
+        If frmCd.ShowDialog() = DialogResult.OK Then
+            AddCdToList(frmCd.chrSelectedDrive)
+        End If
+
+        frmCd.Dispose()
+    End Sub
+
+    Private Sub AddCdToList(ByVal drive As Char)
+        Dim cdrom As New CDDrive
+
+        ' Open cd
+        If cdrom.Open(drive) = True Then
+            If cdrom.Refresh() = True Then
+                For i As Integer = 1 To cdrom.GetNumAudioTracks
+
+                    ' Add in the list in a format C: - 1.cda
+                    ListboxFiles.Items.Add(drive & "-" & i.ToString & ".cda")
+                Next
+            End If
+
+            ' Free resources
+            cdrom.Close()
+            cdrom = Nothing
+        End If
+    End Sub
 End Class
