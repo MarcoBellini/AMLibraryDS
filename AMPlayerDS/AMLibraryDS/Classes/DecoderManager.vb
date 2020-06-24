@@ -392,8 +392,8 @@ Public Class DecoderManager
         End Get
         Set(ByVal value As Status)
             If bIsOpen = True Then
-                RaiseEvent Status_Charged(value)
                 Output.Status = value
+                RaiseEvent Status_Charged(value)
             End If
         End Set
     End Property

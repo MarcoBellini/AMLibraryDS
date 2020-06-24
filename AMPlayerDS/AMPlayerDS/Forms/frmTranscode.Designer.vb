@@ -46,6 +46,7 @@ Partial Class frmTranscode
         Me.TranscodeThread = New System.ComponentModel.BackgroundWorker()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.ProgressLabel = New System.Windows.Forms.Label()
+        Me.RipCDButton = New System.Windows.Forms.Button()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
@@ -58,7 +59,7 @@ Partial Class frmTranscode
         Me.ListboxFiles.Location = New System.Drawing.Point(12, 12)
         Me.ListboxFiles.Name = "ListboxFiles"
         Me.ListboxFiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple
-        Me.ListboxFiles.Size = New System.Drawing.Size(226, 329)
+        Me.ListboxFiles.Size = New System.Drawing.Size(237, 329)
         Me.ListboxFiles.TabIndex = 0
         '
         'GroupBox1
@@ -221,7 +222,7 @@ Partial Class frmTranscode
         '
         'AddButton
         '
-        Me.AddButton.Location = New System.Drawing.Point(39, 354)
+        Me.AddButton.Location = New System.Drawing.Point(12, 354)
         Me.AddButton.Name = "AddButton"
         Me.AddButton.Size = New System.Drawing.Size(75, 23)
         Me.AddButton.TabIndex = 3
@@ -230,7 +231,7 @@ Partial Class frmTranscode
         '
         'RemoveButton
         '
-        Me.RemoveButton.Location = New System.Drawing.Point(120, 354)
+        Me.RemoveButton.Location = New System.Drawing.Point(174, 354)
         Me.RemoveButton.Name = "RemoveButton"
         Me.RemoveButton.Size = New System.Drawing.Size(75, 23)
         Me.RemoveButton.TabIndex = 4
@@ -280,11 +281,21 @@ Partial Class frmTranscode
         Me.ProgressLabel.TabIndex = 12
         Me.ProgressLabel.Text = "Start Encoding..."
         '
+        'RipCDButton
+        '
+        Me.RipCDButton.Location = New System.Drawing.Point(93, 354)
+        Me.RipCDButton.Name = "RipCDButton"
+        Me.RipCDButton.Size = New System.Drawing.Size(75, 23)
+        Me.RipCDButton.TabIndex = 13
+        Me.RipCDButton.Text = "Rip CD"
+        Me.RipCDButton.UseVisualStyleBackColor = True
+        '
         'frmTranscode
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(538, 385)
+        Me.Controls.Add(Me.RipCDButton)
         Me.Controls.Add(Me.GroupBox3)
         Me.Controls.Add(Me.CloseButton)
         Me.Controls.Add(Me.RemoveButton)
@@ -332,4 +343,5 @@ Partial Class frmTranscode
     Friend WithEvents TranscodeProgressBar As ProgressBar
     Friend WithEvents GroupBox3 As GroupBox
     Friend WithEvents ProgressLabel As Label
+    Friend WithEvents RipCDButton As Button
 End Class
