@@ -164,11 +164,12 @@ Public Class AMPlayer
     End Sub
 
     Private Sub ClearAllToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ClearAllToolStripMenuItem.Click
-        DeleteSelectedItems()
+        DeleteAllItems()
     End Sub
 
     Private Sub ClearSelectedItemsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ClearSelectedItemsToolStripMenuItem.Click
-        DeleteAllItems()
+
+        DeleteSelectedItems()
     End Sub
 
     Private Sub EffectsToolStrip_Click(sender As Object, e As EventArgs)
@@ -279,6 +280,22 @@ Public Class AMPlayer
         SavePlaylistFile()
     End Sub
 
+    Private Sub PlayContextToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles PlayContextToolStripMenuItem.Click
+        PlaySelectedItem()
+    End Sub
+
+    Private Sub AddFilesToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AddFilesToolStripMenuItem.Click
+        AddMultipleFileToPlaylist()
+    End Sub
+
+    Private Sub AddFolderToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AddFolderToolStripMenuItem.Click
+        AddFolderToPlaylist()
+    End Sub
+
+    Private Sub DeleteSelectedToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DeleteSelectedToolStripMenuItem.Click
+        DeleteSelectedItems()
+    End Sub
+
 
 #End Region
 
@@ -293,27 +310,14 @@ Public Class AMPlayer
     End Sub
 
     Private Sub Decoder_Status_Charged(ByVal status As Status) Handles Decoder.Status_Charged
-        Select Case status
-            Case Status.PLAYING
-                VisualizationTimer.Enabled = True
-                TrackbarTimer.Enabled = True
-            Case Status.STOPPED
-                VisualizationTimer.Enabled = True
-                TrackbarTimer.Enabled = False
-
-                Invoke(UpdateUI, Decoder.CurrentFileStreamInfo)
-
-            Case Status.PAUSING
-                VisualizationTimer.Enabled = False
-                TrackbarTimer.Enabled = False
-        End Select
+        Invoke(UpdateUI, Decoder.CurrentFileStreamInfo)
     End Sub
 
 #End Region
 
 #Region "Form Functions"
 
-    Private Sub DeleteSelectedItems()
+    Private Sub DeleteAllItems()
         ' Remove all items
         PlaylistList.Clear()
         Playlist.RemoveAllRows()
@@ -326,7 +330,7 @@ Public Class AMPlayer
         nCurrentPlayIndex = INVALID_INDEX
     End Sub
 
-    Private Sub DeleteAllItems()
+    Private Sub DeleteSelectedItems()
         Dim selectedItems As List(Of Integer)
 
         ' Get selected items
@@ -334,6 +338,13 @@ Public Class AMPlayer
 
         ' If no elements are selected exit
         If selectedItems.Count = 0 Then Exit Sub
+
+        ' If all items are selected delete all and exit sub
+        If selectedItems.Count = PlaylistList.Count Then
+            DeleteAllItems()
+
+            Exit Sub
+        End If
 
         For i As Integer = 0 To selectedItems.Count - 1
             Playlist.RemoveRow(selectedItems(i))
@@ -370,10 +381,33 @@ Public Class AMPlayer
                                    Info.BitsPerSample & " bits"
         End If
 
-        If Decoder.Status = Status.STOPPED Then
-            UpdatePositionAndTimeLabel(0)
-        End If
 
+        ' Update menus, Trackbar / Label and Timers
+        Select Case Decoder.Status
+            Case Status.PLAYING
+                StopToolStripMenuItem.Checked = False
+                PauseToolStripMenuItem.Checked = False
+                PlayToolStripMenuItem.Checked = True
+
+                VisualizationTimer.Enabled = True
+                TrackbarTimer.Enabled = True
+            Case Status.PAUSING
+                StopToolStripMenuItem.Checked = False
+                PauseToolStripMenuItem.Checked = True
+                PlayToolStripMenuItem.Checked = False
+
+                VisualizationTimer.Enabled = False
+                TrackbarTimer.Enabled = False
+            Case Status.STOPPED
+                StopToolStripMenuItem.Checked = True
+                PauseToolStripMenuItem.Checked = False
+                PlayToolStripMenuItem.Checked = False
+
+                UpdatePositionAndTimeLabel(0)
+
+                VisualizationTimer.Enabled = True
+                TrackbarTimer.Enabled = False
+        End Select
 
     End Sub
 
@@ -381,12 +415,7 @@ Public Class AMPlayer
         If Value < 0 Then Exit Sub
 
         PositionTrackbar.Value = Value
-
-        With TimeSpan.FromSeconds(Value)
-            TimeStripLabel.Text = Format(.TotalHours, "0") &
-                                  ":" & Fix(.TotalMinutes).ToString &
-                                  ":" & Format(.Seconds, "00")
-        End With
+        TimeStripLabel.Text = FormatTime(TimeSpan.FromSeconds(Value))
     End Sub
 
     ' Safe open file dialog using STA thread
@@ -451,7 +480,7 @@ Public Class AMPlayer
 
         ' Add files to Playlist
         Playlist.AddRow(IO.Path.GetFileNameWithoutExtension(FilePath),
-                        "0:00")
+                        FormatTime(TimeSpan.FromMilliseconds(0)))
 
     End Sub
 
@@ -474,9 +503,8 @@ Public Class AMPlayer
                     nDuration = cdrom.GetTrackLength(i) * 2352 \ 176400
                     Info.DurationInMs = nDuration * 1000
 
-                    With TimeSpan.FromSeconds(nDuration)
-                        strDuration = Fix(.Minutes) & ":" & Format(.Seconds, "00")
-                    End With
+                    ' Format time value
+                    strDuration = FormatTime(TimeSpan.FromMilliseconds(Info.DurationInMs))
 
                     PlaylistList.Add(Info)
                     Playlist.AddRow("CD Track: " & i.ToString, strDuration)
@@ -502,14 +530,7 @@ Public Class AMPlayer
         PlaylistList(Index) = info
 
         ' Calculate informations
-        With TimeSpan.FromMilliseconds(info.DurationInMs)
-            If .Hours <> 0 Then
-                StrDuration = Fix(.Hours) & ":" & Fix(.Minutes) & ":" & Format(.Seconds, "00")
-            Else
-                StrDuration = Fix(.Minutes) & ":" & Format(.Seconds, "00")
-            End If
-
-        End With
+        StrDuration = FormatTime(TimeSpan.FromMilliseconds(info.DurationInMs))
 
         ' Update playlist
         If info.Artist <> "" And info.Title <> "" Then
@@ -692,14 +713,7 @@ Public Class AMPlayer
             If info IsNot Nothing Then
 
                 ' Convert to duration in H:M:S
-                With TimeSpan.FromMilliseconds(info.DurationInMs)
-                    If .Hours <> 0 Then
-                        strDuration = Fix(.Hours) & ":" & Fix(.Minutes) & ":" & Format(.Seconds, "00")
-                    Else
-                        strDuration = Fix(.Minutes) & ":" & Format(.Seconds, "00")
-                    End If
-
-                End With
+                strDuration = FormatTime(TimeSpan.FromMilliseconds(info.DurationInMs))
 
                 ' Fill with TAG if avaiable
                 If (info.Title <> "") And (info.Artist <> "") Then
@@ -739,7 +753,7 @@ Public Class AMPlayer
         FilePath = OpenDialog.OpenSingleFile("Supported Playlist|" & PlsManager.GetPlaylistReaderExtensions)
 
         ' If no file are selected, exit
-        If FilePath Is Nothing Then Exit Sub
+        If FilePath = "" Then Exit Sub
 
         If PlsManager.Open(FilePath, PlaylistManager.PlaylistMode.Read) = True Then
 
@@ -753,18 +767,7 @@ Public Class AMPlayer
                 PlaylistList.Add(Info)
 
                 ' Check if duration is valid, oterwise use file size
-                If Info.DurationInMs <> 0 Then
-                    With TimeSpan.FromMilliseconds(Info.DurationInMs)
-                        If .Hours <> 0 Then
-                            strDuration = Fix(.Hours) & ":" & Fix(.Minutes) & ":" & Format(.Seconds, "00")
-                        Else
-                            strDuration = Fix(.Minutes) & ":" & Format(.Seconds, "00")
-                        End If
-
-                    End With
-                Else
-                    strDuration = "0:00"
-                End If
+                strDuration = FormatTime(TimeSpan.FromMilliseconds(Info.DurationInMs))
 
                 ' Fill with TAG if avaiable otherwise use file name
                 If (Info.Title <> "") And (Info.Artist <> "") Then
@@ -797,7 +800,7 @@ Public Class AMPlayer
         FilePath = OpenDialog.SaveSingleFile("Supported Playlist|" & PlsManager.GetPlaylistWriterExtensions)
 
         ' If no file are selected, exit
-        If FilePath Is Nothing Then Exit Sub
+        If FilePath = "" Then Exit Sub
 
         If PlsManager.Open(FilePath, PlaylistManager.PlaylistMode.Write) = True Then
 
@@ -820,7 +823,30 @@ Public Class AMPlayer
 
     End Sub
 
+    Private Sub PlaySelectedItem()
+        Dim Indexes As List(Of Integer)
 
+        If Decoder IsNot Nothing Then
+            ' Read selected items
+            Indexes = Playlist.SelectedItems()
+
+            ' Check at least one file is selected
+            If Indexes.Count = 0 Then Exit Sub
+
+            ' Open and Play first selected file
+            If Decoder.OpenFile(PlaylistList(Indexes(0)).FileLocation) = True Then
+                PlayHelper()
+
+                ' Update playlist
+                nCurrentPlayIndex = Indexes(0)
+
+                ' Thread Safe Invocation
+                Invoke(UpdatePlaylistEntry, Decoder.CurrentFileStreamInfo, nCurrentPlayIndex)
+                Invoke(UpdateUI, Decoder.CurrentFileStreamInfo)
+            End If
+
+        End If
+    End Sub
 
 #End Region
 End Class

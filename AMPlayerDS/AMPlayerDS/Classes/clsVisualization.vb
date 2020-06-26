@@ -21,7 +21,7 @@
 
     ' Multiply Each band to Loud high frequecies. This allow to 
     ' draw a well shaped spectrums
-    Private gain() As Single = {0.2, 0.25, 0.4, 0.5, 0.7, 0.8, 0.9, 1.0, 1.0, 1.5, 1.5, 1.7, 2.0, 2.5, 2.5, 2.5, 3.0, 3.0, 3.5, 4.0}
+    Private gain() As Single = {0.2, 0.25, 0.4, 0.5, 0.7, 0.8, 0.9, 1.1, 1.2, 1.5, 1.5, 1.7, 2.0, 2.5, 3.0, 3.0, 3.5, 3.5, 4.0, 4.0}
 
     Private bars(NUMBER_OF_BARS - 1) As VisualizationBar
 

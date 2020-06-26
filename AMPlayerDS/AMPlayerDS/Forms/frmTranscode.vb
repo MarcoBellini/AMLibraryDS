@@ -11,7 +11,11 @@
 
     Private OutputFolder As String = ""
     Private bTranscodeInProgress As Boolean = False
-    Private Encoder As EncoderManager
+    Private WithEvents Encoder As EncoderManager
+
+    Private Delegate Sub UpdateTrackProgress(ByVal Percent As Single)
+    Private UpdateTrackProgressDelegate As New UpdateTrackProgress(AddressOf UpdateTrackProgressProc)
+
 
     Private Sub CloseButton_Click(sender As Object, e As EventArgs) Handles CloseButton.Click
         Close()
@@ -243,11 +247,7 @@
     Private Sub TranscodeThread_ProgressChanged(sender As Object, e As System.ComponentModel.ProgressChangedEventArgs) Handles TranscodeThread.ProgressChanged
         ' Update Progressbar
         TranscodeProgressBar.Value = e.ProgressPercentage
-        ProgressLabel.Text = "Encoding " & e.ProgressPercentage & " %"
-
-        'Force Form Update
-        'Refresh()
-        'Application.DoEvents()
+        ProgressLabel.Text = "Total: " & e.ProgressPercentage & " %"
     End Sub
 
     Private Sub TranscodeThread_RunWorkerCompleted(sender As Object, e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles TranscodeThread.RunWorkerCompleted
@@ -285,4 +285,18 @@
             cdrom = Nothing
         End If
     End Sub
+
+    Private Sub Encoder_WritePass(percent As Single) Handles Encoder.WritePass
+
+        ' Thread safe update
+        Invoke(UpdateTrackProgressDelegate, percent)
+    End Sub
+
+    Private Sub UpdateTrackProgressProc(ByVal Percent As Single)
+
+        ' Update Label and progress bar
+        CurrentTrackProgressBar.Value = Math.Floor(Percent)
+        CurrentTrackProgressLabel.Text = "Current track: " & Math.Floor(Percent) & " %"
+    End Sub
+
 End Class

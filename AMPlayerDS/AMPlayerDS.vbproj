@@ -315,6 +315,7 @@
     <Content Include="CompiledDLL\x64\opusfile.dll" />
     <Content Include="CompiledDLL\x64\ssleay32.dll" />
     <Content Include="CompiledDLL\x86\libeay32.dll" />
+    <Content Include="CompiledDLL\x86\libmp3lame.dll" />
     <Content Include="CompiledDLL\x86\libmpg123.dll" />
     <Content Include="CompiledDLL\x86\libogg-0.dll" />
     <Content Include="CompiledDLL\x86\libopus-0.dll" />
@@ -323,6 +324,7 @@
     <Content Include="CompiledDLL\x86\libvorbisfile.dll" />
     <Content Include="CompiledDLL\x86\opusfile.dll" />
     <Content Include="CompiledDLL\x86\ssleay32.dll" />
+    <None Include="images\appbar.control.eject.png" />
     <Content Include="logoNewIco.ico" />
   </ItemGroup>
   <ItemGroup>

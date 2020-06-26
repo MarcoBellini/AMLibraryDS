@@ -45,6 +45,8 @@ Partial Class frmTranscode
         Me.CloseButton = New System.Windows.Forms.Button()
         Me.TranscodeThread = New System.ComponentModel.BackgroundWorker()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.CurrentTrackProgressLabel = New System.Windows.Forms.Label()
+        Me.CurrentTrackProgressBar = New System.Windows.Forms.ProgressBar()
         Me.ProgressLabel = New System.Windows.Forms.Label()
         Me.RipCDButton = New System.Windows.Forms.Button()
         Me.GroupBox1.SuspendLayout()
@@ -59,7 +61,7 @@ Partial Class frmTranscode
         Me.ListboxFiles.Location = New System.Drawing.Point(12, 12)
         Me.ListboxFiles.Name = "ListboxFiles"
         Me.ListboxFiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple
-        Me.ListboxFiles.Size = New System.Drawing.Size(237, 329)
+        Me.ListboxFiles.Size = New System.Drawing.Size(237, 368)
         Me.ListboxFiles.TabIndex = 0
         '
         'GroupBox1
@@ -73,7 +75,7 @@ Partial Class frmTranscode
         Me.GroupBox1.Controls.Add(Me.EnableResampleCheckbox)
         Me.GroupBox1.Location = New System.Drawing.Point(260, 12)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(259, 115)
+        Me.GroupBox1.Size = New System.Drawing.Size(289, 115)
         Me.GroupBox1.TabIndex = 1
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Resample"
@@ -155,7 +157,7 @@ Partial Class frmTranscode
         Me.GroupBox2.Controls.Add(Me.Label4)
         Me.GroupBox2.Location = New System.Drawing.Point(260, 133)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(259, 152)
+        Me.GroupBox2.Size = New System.Drawing.Size(289, 152)
         Me.GroupBox2.TabIndex = 2
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Output"
@@ -215,14 +217,14 @@ Partial Class frmTranscode
         '
         'TranscodeProgressBar
         '
-        Me.TranscodeProgressBar.Location = New System.Drawing.Point(103, 24)
+        Me.TranscodeProgressBar.Location = New System.Drawing.Point(131, 60)
         Me.TranscodeProgressBar.Name = "TranscodeProgressBar"
         Me.TranscodeProgressBar.Size = New System.Drawing.Size(142, 12)
         Me.TranscodeProgressBar.TabIndex = 11
         '
         'AddButton
         '
-        Me.AddButton.Location = New System.Drawing.Point(12, 354)
+        Me.AddButton.Location = New System.Drawing.Point(12, 394)
         Me.AddButton.Name = "AddButton"
         Me.AddButton.Size = New System.Drawing.Size(75, 23)
         Me.AddButton.TabIndex = 3
@@ -231,7 +233,7 @@ Partial Class frmTranscode
         '
         'RemoveButton
         '
-        Me.RemoveButton.Location = New System.Drawing.Point(174, 354)
+        Me.RemoveButton.Location = New System.Drawing.Point(174, 394)
         Me.RemoveButton.Name = "RemoveButton"
         Me.RemoveButton.Size = New System.Drawing.Size(75, 23)
         Me.RemoveButton.TabIndex = 4
@@ -240,7 +242,7 @@ Partial Class frmTranscode
         '
         'ProcessButton
         '
-        Me.ProcessButton.Location = New System.Drawing.Point(444, 354)
+        Me.ProcessButton.Location = New System.Drawing.Point(474, 394)
         Me.ProcessButton.Name = "ProcessButton"
         Me.ProcessButton.Size = New System.Drawing.Size(75, 23)
         Me.ProcessButton.TabIndex = 5
@@ -249,7 +251,7 @@ Partial Class frmTranscode
         '
         'CloseButton
         '
-        Me.CloseButton.Location = New System.Drawing.Point(363, 354)
+        Me.CloseButton.Location = New System.Drawing.Point(393, 394)
         Me.CloseButton.Name = "CloseButton"
         Me.CloseButton.Size = New System.Drawing.Size(75, 23)
         Me.CloseButton.TabIndex = 6
@@ -263,27 +265,45 @@ Partial Class frmTranscode
         '
         'GroupBox3
         '
+        Me.GroupBox3.Controls.Add(Me.CurrentTrackProgressLabel)
+        Me.GroupBox3.Controls.Add(Me.CurrentTrackProgressBar)
         Me.GroupBox3.Controls.Add(Me.ProgressLabel)
         Me.GroupBox3.Controls.Add(Me.TranscodeProgressBar)
         Me.GroupBox3.Location = New System.Drawing.Point(260, 291)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(259, 50)
+        Me.GroupBox3.Size = New System.Drawing.Size(289, 89)
         Me.GroupBox3.TabIndex = 12
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Progress"
         '
+        'CurrentTrackProgressLabel
+        '
+        Me.CurrentTrackProgressLabel.AutoSize = True
+        Me.CurrentTrackProgressLabel.Location = New System.Drawing.Point(18, 29)
+        Me.CurrentTrackProgressLabel.Name = "CurrentTrackProgressLabel"
+        Me.CurrentTrackProgressLabel.Size = New System.Drawing.Size(75, 13)
+        Me.CurrentTrackProgressLabel.TabIndex = 14
+        Me.CurrentTrackProgressLabel.Text = "Current Track:"
+        '
+        'CurrentTrackProgressBar
+        '
+        Me.CurrentTrackProgressBar.Location = New System.Drawing.Point(131, 31)
+        Me.CurrentTrackProgressBar.Name = "CurrentTrackProgressBar"
+        Me.CurrentTrackProgressBar.Size = New System.Drawing.Size(142, 11)
+        Me.CurrentTrackProgressBar.TabIndex = 13
+        '
         'ProgressLabel
         '
         Me.ProgressLabel.AutoSize = True
-        Me.ProgressLabel.Location = New System.Drawing.Point(14, 23)
+        Me.ProgressLabel.Location = New System.Drawing.Point(18, 59)
         Me.ProgressLabel.Name = "ProgressLabel"
-        Me.ProgressLabel.Size = New System.Drawing.Size(86, 13)
+        Me.ProgressLabel.Size = New System.Drawing.Size(34, 13)
         Me.ProgressLabel.TabIndex = 12
-        Me.ProgressLabel.Text = "Start Encoding..."
+        Me.ProgressLabel.Text = "Total:"
         '
         'RipCDButton
         '
-        Me.RipCDButton.Location = New System.Drawing.Point(93, 354)
+        Me.RipCDButton.Location = New System.Drawing.Point(93, 394)
         Me.RipCDButton.Name = "RipCDButton"
         Me.RipCDButton.Size = New System.Drawing.Size(75, 23)
         Me.RipCDButton.TabIndex = 13
@@ -294,7 +314,7 @@ Partial Class frmTranscode
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(538, 385)
+        Me.ClientSize = New System.Drawing.Size(561, 429)
         Me.Controls.Add(Me.RipCDButton)
         Me.Controls.Add(Me.GroupBox3)
         Me.Controls.Add(Me.CloseButton)
@@ -344,4 +364,6 @@ Partial Class frmTranscode
     Friend WithEvents GroupBox3 As GroupBox
     Friend WithEvents ProgressLabel As Label
     Friend WithEvents RipCDButton As Button
+    Friend WithEvents CurrentTrackProgressLabel As Label
+    Friend WithEvents CurrentTrackProgressBar As ProgressBar
 End Class

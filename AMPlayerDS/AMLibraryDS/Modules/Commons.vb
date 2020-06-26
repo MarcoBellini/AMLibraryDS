@@ -14,4 +14,19 @@ Public Module Commons
         Public AvgBytesPerSec As Integer
     End Structure
 
+    Public Function FormatTime(ByRef Time As TimeSpan) As String
+        Dim Result As String
+
+        With Time
+            If .Hours <> 0 Then
+                Result = Fix(.Hours) & ":" & Fix(.Minutes) & ":" & Format(.Seconds, "00")
+            Else
+                Result = Fix(.Minutes) & ":" & Format(.Seconds, "00")
+            End If
+
+        End With
+
+        Return Result
+    End Function
+
 End Module

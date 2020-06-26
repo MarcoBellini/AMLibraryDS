@@ -8,11 +8,11 @@ Imports System.Runtime.InteropServices
 
 ' Rivedere i valori degli attributi dell'assembly
 
-<Assembly: AssemblyTitle("AMPlayerDS")> 
-<Assembly: AssemblyDescription("")>
+<Assembly: AssemblyTitle("AMPlayerDS")>
+<Assembly: AssemblyDescription("VB.NET Audio Player")>
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("AMPlayerDS")>
-<Assembly: AssemblyCopyright("")>
+<Assembly: AssemblyCopyright("GPL v 3.0")>
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
