@@ -180,7 +180,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AMLibraryDS\Modules\PCMUtility.vb" />
+    <Compile Include="AMPlayerDS\Classes\MagnetizeMe.vb" />
     <Compile Include="AMPlayerDS\Classes\SafeFileDialog.vb" />
+    <Compile Include="AMPlayerDS\Classes\SingleInstanceFramework\InterprocessReciver.vb" />
+    <Compile Include="AMPlayerDS\Classes\SingleInstanceFramework\InterprocessSender.vb" />
+    <Compile Include="AMPlayerDS\Classes\SingleInstanceFramework\InterprocessTransferData.vb" />
+    <Compile Include="AMPlayerDS\Classes\SingleInstanceFramework\InterprocessWinapi.vb" />
     <Compile Include="AMPlayerDS\Edited Controls\CustomListView.designer.vb">
       <DependentUpon>CustomListView.vb</DependentUpon>
     </Compile>
@@ -205,10 +210,22 @@
     <Compile Include="AMLibraryDS\Interfaces\ISoundEffect.vb" />
     <Compile Include="AMLibraryDS\Interfaces\ISoundEncoder.vb" />
     <Compile Include="AMLibraryDS\Interfaces\ISoundOutput.vb" />
+    <Compile Include="AMPlayerDS\Forms\frmAbout.Designer.vb">
+      <DependentUpon>frmAbout.vb</DependentUpon>
+    </Compile>
+    <Compile Include="AMPlayerDS\Forms\frmAbout.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="AMPlayerDS\Forms\frmOpenCD.Designer.vb">
       <DependentUpon>frmOpenCD.vb</DependentUpon>
     </Compile>
     <Compile Include="AMPlayerDS\Forms\frmOpenCD.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AMPlayerDS\Forms\frmPreferences.Designer.vb">
+      <DependentUpon>frmPreferences.vb</DependentUpon>
+    </Compile>
+    <Compile Include="AMPlayerDS\Forms\frmPreferences.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AMPlayerDS\Forms\frmTagDialog.Designer.vb">
@@ -266,8 +283,14 @@
       <SubType>Designer</SubType>
       <DependentUpon>AMPlayer.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AMPlayerDS\Forms\frmAbout.resx">
+      <DependentUpon>frmAbout.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AMPlayerDS\Forms\frmOpenCD.resx">
       <DependentUpon>frmOpenCD.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AMPlayerDS\Forms\frmPreferences.resx">
+      <DependentUpon>frmPreferences.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AMPlayerDS\Forms\frmTagDialog.resx">
       <DependentUpon>frmTagDialog.vb</DependentUpon>
@@ -332,6 +355,9 @@
       <Project>{5a910b52-6ab0-4f84-875d-fff8893a4383}</Project>
       <Name>WinampComponents</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AMPlayerDS\Modules\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>

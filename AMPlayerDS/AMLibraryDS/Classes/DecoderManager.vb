@@ -1,7 +1,6 @@
 
 Imports System.Text
 
-' TODO: implement fast stream info + stream info
 Public Class DecoderManager
     Implements IDisposable
 
@@ -25,8 +24,10 @@ Public Class DecoderManager
     Public Event File_Opened(ByVal info As StreamInformations)
     Public Event Status_Charged(ByVal status As Status)
 
-    ' TODO: Add fast stream information
-    ' Function FastStreamInfo(path) as streaminformations
+    Public Enum OutputPlugins
+        WaveOut = 0
+        DirectSound
+    End Enum
 
     Public Function FastStreamInformation(ByVal path As String) As StreamInformations
         Dim info As StreamInformations = Nothing
@@ -48,11 +49,6 @@ Public Class DecoderManager
 
         Return info
     End Function
-
-    Public Enum OutputPlugins
-        WaveOut = 0
-        DirectSound
-    End Enum
 
     Private Sub Input_NeedData(ByRef Buffer() As Byte) Handles Input.DataReaded_Event
         If Not bIsOpen Then Exit Sub ' Prevent processing on not streaming data
@@ -159,6 +155,15 @@ Public Class DecoderManager
                         ' Update Input
                         Output.ISoundDecoder = Input
                         Output.Open(sWaveFormat)
+
+                        ' Reload Pan and Volume settings
+                        If My.Settings.Decoder_Volume >= 0 And My.Settings.Decoder_Volume <= 100 Then
+                            Output.Volume = My.Settings.Decoder_Volume
+                        End If
+
+                        If My.Settings.Decoder_Pan >= -100 And My.Settings.Decoder_Pan <= 100 Then
+                            Output.Pan = My.Settings.Decoder_Pan
+                        End If
 
                         UpdateEffectWFX()
 
@@ -406,21 +411,30 @@ Public Class DecoderManager
         End Get
     End Property
 
-    Public Property Volume() As Long
+    Public Property Volume() As Integer
         Get
-            Return Output.Volume
+            Return My.Settings.Decoder_Volume
         End Get
-        Set(ByVal value As Long)
+        Set(ByVal value As Integer)
+            ' Update output
             Output.Volume = value
+
+            ' Save new setting
+            My.Settings.Decoder_Volume = value
         End Set
     End Property
 
     Public Property Pan() As Integer
         Get
-            Return Output.Pan
+
+            Return My.Settings.Decoder_Pan
         End Get
         Set(ByVal value As Integer)
+            ' Update output
             Output.Pan = value
+
+            ' Save new setting
+            My.Settings.Decoder_Pan = value
         End Set
     End Property
 

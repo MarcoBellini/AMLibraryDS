@@ -92,7 +92,7 @@ Partial Class frmTranscode
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(128, 21)
+        Me.Label2.Location = New System.Drawing.Point(154, 21)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(54, 13)
         Me.Label2.TabIndex = 5
@@ -112,13 +112,13 @@ Partial Class frmTranscode
         Me.OutputSamplerateCombobox.FormattingEnabled = True
         Me.OutputSamplerateCombobox.Location = New System.Drawing.Point(17, 80)
         Me.OutputSamplerateCombobox.Name = "OutputSamplerateCombobox"
-        Me.OutputSamplerateCombobox.Size = New System.Drawing.Size(228, 21)
+        Me.OutputSamplerateCombobox.Size = New System.Drawing.Size(256, 21)
         Me.OutputSamplerateCombobox.TabIndex = 3
         '
         'MonoRadioButton
         '
         Me.MonoRadioButton.AutoSize = True
-        Me.MonoRadioButton.Location = New System.Drawing.Point(193, 37)
+        Me.MonoRadioButton.Location = New System.Drawing.Point(219, 37)
         Me.MonoRadioButton.Name = "MonoRadioButton"
         Me.MonoRadioButton.Size = New System.Drawing.Size(52, 17)
         Me.MonoRadioButton.TabIndex = 2
@@ -129,7 +129,7 @@ Partial Class frmTranscode
         '
         Me.StereoRadioButton.AutoSize = True
         Me.StereoRadioButton.Checked = True
-        Me.StereoRadioButton.Location = New System.Drawing.Point(131, 37)
+        Me.StereoRadioButton.Location = New System.Drawing.Point(157, 37)
         Me.StereoRadioButton.Name = "StereoRadioButton"
         Me.StereoRadioButton.Size = New System.Drawing.Size(56, 17)
         Me.StereoRadioButton.TabIndex = 1
@@ -164,7 +164,7 @@ Partial Class frmTranscode
         '
         'ConfigureOutputButton
         '
-        Me.ConfigureOutputButton.Location = New System.Drawing.Point(131, 123)
+        Me.ConfigureOutputButton.Location = New System.Drawing.Point(157, 123)
         Me.ConfigureOutputButton.Name = "ConfigureOutputButton"
         Me.ConfigureOutputButton.Size = New System.Drawing.Size(114, 22)
         Me.ConfigureOutputButton.TabIndex = 6
@@ -176,7 +176,7 @@ Partial Class frmTranscode
         Me.OutputFormatCombobox.FormattingEnabled = True
         Me.OutputFormatCombobox.Location = New System.Drawing.Point(17, 96)
         Me.OutputFormatCombobox.Name = "OutputFormatCombobox"
-        Me.OutputFormatCombobox.Size = New System.Drawing.Size(228, 21)
+        Me.OutputFormatCombobox.Size = New System.Drawing.Size(256, 21)
         Me.OutputFormatCombobox.TabIndex = 7
         '
         'Label6
@@ -314,7 +314,7 @@ Partial Class frmTranscode
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(561, 429)
+        Me.ClientSize = New System.Drawing.Size(561, 423)
         Me.Controls.Add(Me.RipCDButton)
         Me.Controls.Add(Me.GroupBox3)
         Me.Controls.Add(Me.CloseButton)
