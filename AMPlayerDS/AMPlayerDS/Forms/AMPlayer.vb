@@ -4,7 +4,10 @@ Public Class AMPlayer
     Private Const INVALID_INDEX As Integer = -1
 
     Private WithEvents Decoder As DecoderManager
+    Private WithEvents MsgReciver As InterprocessReciver
+
     Private clsVis As clsVisualization
+    Private clsMagnet As MagnetizeMe
 
     Public PlaylistList As New List(Of StreamInformations)
 
@@ -17,11 +20,46 @@ Public Class AMPlayer
     Private UpdateUI As New UpdateUIDelegate(AddressOf UpdateUIProc)
     Private UpdatePlaylistEntry As New UpdatePlaylistEntryDelegate(AddressOf UpdatePlaylistEntryProc)
 
+    Private bLoadingParamsPending As Boolean
+
+#Region "Constructor"
+
+    Public Sub New(ByRef Params() As String)
+
+        ' La chiamata è richiesta dalla finestra di progettazione.
+        InitializeComponent()
+
+        ' Init var
+        bLoadingParamsPending = False
+
+        'If there are params, process...
+        If Params.Length > 0 Then
+
+            ' Add files to playlist
+            For i As Integer = 0 To Params.Length - 1
+                AddFileToPlaylist(Params(i))
+            Next
+
+            ' Notify there are pending params to process
+            bLoadingParamsPending = True
+        End If
+
+    End Sub
+
+#End Region
+
 #Region "Form Events"
     Private Sub AMPlayer_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         ' Create decoder
         Decoder = New DecoderManager
-        Decoder.Init(Me.Handle, DecoderManager.OutputPlugins.DirectSound)
+
+        ' Try to load saved output setting. If fail use DirectSound
+        If [Enum].IsDefined(GetType(DecoderManager.OutputPlugins), My.Settings.AMPlayer_OutputPlugin) = True Then
+            Decoder.Init(Me.Handle, My.Settings.AMPlayer_OutputPlugin)
+        Else
+            Decoder.Init(Me.Handle, DecoderManager.OutputPlugins.DirectSound)
+        End If
+
 
         ' Reload output values
         VolumePanControl1.Volume = Decoder.Volume
@@ -36,6 +74,27 @@ Public Class AMPlayer
 
         ' Create Visualizations
         clsVis = New clsVisualization(Me.PicVisualization)
+
+        ' Create Message reciver
+        MsgReciver = New InterprocessReciver(Me.Handle, AMPlayerChannel)
+
+        ' Magnetize main form
+        clsMagnet = New MagnetizeMe(Me)
+
+        ' Check if there are some pending params to process
+        If bLoadingParamsPending = True Then
+
+            ' Open and Play first item of playlist
+            If Decoder.OpenFile(PlaylistList(0).FileLocation) = True Then
+                PlayHelper()
+
+                ' Update playlist
+                nCurrentPlayIndex = 0
+
+                ' Thread Safe Invocation
+                Invoke(UpdatePlaylistEntry, Decoder.CurrentFileStreamInfo, 0)
+            End If
+        End If
     End Sub
 
     Private Sub Form1_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
@@ -75,6 +134,10 @@ Public Class AMPlayer
             ' Open near to mouse click
             MousePosition.X = e.Location.X
             MousePosition.Y = e.Location.Y + 50
+
+            ' Reload values
+            VolumePanControl1.Volume = Decoder.Volume
+            VolumePanControl1.Pan = Decoder.Pan
 
             VolumePanControl1.ShowControl(MousePosition)
 
@@ -294,6 +357,20 @@ Public Class AMPlayer
 
     Private Sub DeleteSelectedToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DeleteSelectedToolStripMenuItem.Click
         DeleteSelectedItems()
+    End Sub
+
+    Private Sub PreferenciesToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles PreferenciesToolStripMenuItem.Click
+        Dim FrmPref As New frmPreferences
+
+        ' Show Configuration form
+        FrmPref.Show(Me)
+    End Sub
+
+    Private Sub AboutToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AboutToolStripMenuItem.Click
+        Dim FrmAbout As New frmAbout
+
+        ' Show About Form
+        FrmAbout.Show(Me)
     End Sub
 
 
@@ -847,6 +924,49 @@ Public Class AMPlayer
 
         End If
     End Sub
+
+#End Region
+
+#Region "Other Instances message reciver"
+
+    Private Sub MsgReciver_RecivedDataEvent(ByRef data As InterprocessTransferData) Handles MsgReciver.RecivedDataEvent
+
+        Select Case data.Action
+            Case InterprocessActions.AddToPlaylist
+                AddFileToPlaylist(data.Path)
+                UpdatePlaylist()
+            Case InterprocessActions.AddToPlaylistAndPlayItem
+                AddFileToPlaylist(data.Path)
+
+                ' Close current streaming
+                If Decoder.Status <> Status.STOPPED Then
+                    Decoder.Status = Status.STOPPED
+                    Decoder.Close()
+                End If
+
+                ' Open and Play
+                If Decoder.OpenFile(data.Path) = True Then
+                    PlayHelper()
+
+                    ' Update playlist
+                    nCurrentPlayIndex = PlaylistList.Count - 1
+
+                    ' Thread Safe Invocation
+                    Invoke(UpdatePlaylistEntry, Decoder.CurrentFileStreamInfo, nCurrentPlayIndex)
+                End If
+
+
+        End Select
+
+#If DEBUG Then
+        DebugPrintLine("AMPlayer", "Message recived: " & data.Path)
+#End If
+    End Sub
+
+
+
+
+
 
 #End Region
 End Class

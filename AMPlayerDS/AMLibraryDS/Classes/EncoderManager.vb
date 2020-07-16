@@ -197,10 +197,10 @@
                             If InputInformations.Samplerate <> OutputInformations.Samplerate Then
                                 bChargeSamplerate = True
 
-                                ' Create new resampler session at medium quality
+                                ' Create new resampler session at medium quality( Now use user selected setting)
                                 Resampler.NewConversion(InputInformations.Samplerate,
                                                         OutputInformations.Samplerate,
-                                                        LibSamplerate.ConverterType.SRC_SINC_MEDIUM_QUALITY,
+                                                        My.Settings.LibSamplerate_EncoderQuality,
                                                         InputInformations.Channels,
                                                         OutputInformations.Channels)
                             End If

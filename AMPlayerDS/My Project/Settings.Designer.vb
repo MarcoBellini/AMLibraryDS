@@ -317,6 +317,54 @@ Namespace My
                 Me("LAME_VBRModeIndex") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("1")>  _
+        Public Property LibSamplerate_EncoderQuality() As Integer
+            Get
+                Return CType(Me("LibSamplerate_EncoderQuality"),Integer)
+            End Get
+            Set
+                Me("LibSamplerate_EncoderQuality") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("100")>  _
+        Public Property Decoder_Volume() As Integer
+            Get
+                Return CType(Me("Decoder_Volume"),Integer)
+            End Get
+            Set
+                Me("Decoder_Volume") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property Decoder_Pan() As Integer
+            Get
+                Return CType(Me("Decoder_Pan"),Integer)
+            End Get
+            Set
+                Me("Decoder_Pan") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("1")>  _
+        Public Property AMPlayer_OutputPlugin() As Integer
+            Get
+                Return CType(Me("AMPlayer_OutputPlugin"),Integer)
+            End Get
+            Set
+                Me("AMPlayer_OutputPlugin") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
