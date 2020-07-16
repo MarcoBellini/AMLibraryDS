@@ -366,6 +366,13 @@ Public Class AMPlayer
         FrmPref.Show(Me)
     End Sub
 
+    Private Sub AboutToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AboutToolStripMenuItem.Click
+        Dim FrmAbout As New frmAbout
+
+        ' Show About Form
+        FrmAbout.Show(Me)
+    End Sub
+
 
 #End Region
 
@@ -955,6 +962,8 @@ Public Class AMPlayer
         DebugPrintLine("AMPlayer", "Message recived: " & data.Path)
 #End If
     End Sub
+
+
 
 
 

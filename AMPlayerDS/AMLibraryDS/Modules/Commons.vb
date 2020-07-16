@@ -4,10 +4,10 @@ Public Module Commons
 
 #If PLATFORM = "x86" Then
     ' Dll name in app folder
-    Private ReadOnly CompiledPlatform As String = "x86"
+    Public ReadOnly CompiledPlatform As String = "x86"
 #ElseIf PLATFORM = "x64" Then
     ' Dll name in app folder
-    Private ReadOnly CompiledPlatform As String = "x64"
+    Public ReadOnly CompiledPlatform As String = "x64"
 #End If
 
 

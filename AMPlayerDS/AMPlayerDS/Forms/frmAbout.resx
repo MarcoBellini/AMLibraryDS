@@ -147,4 +147,21 @@
         fUbqU2BM9lhY0vQvTD0rGFu3fNkAAAAASUVORK5CYII=
 </value>
   </data>
+  <data name="TextBox1.Text" xml:space="preserve">
+    <value>This project has the following dependencies:
+
+- Winamp style trackbar. This is a C# Library you can found at: https://www.codeproject.com/Articles/997101/Custom-Winamp-Style-TrackBar-Slider
+
+- Lib Samplerate is used in the transcode form: http://www.mega-nerd.com/SRC/
+
+- StreamMP3 is based on MPG123 library: https://www.mpg123.de/
+
+- OGG / Vorbis stream: https://xiph.org/vorbis/
+
+- OPUS File support: https://opus-codec.org/
+
+- MP3 Encoder: https://lame.sourceforge.io/
+
+- DSP Phaser based on foobar plugin: https://github.com/mudlord/foobar2000-plugins/tree/master/foo_dsp_effect</value>
+  </data>
 </root>
