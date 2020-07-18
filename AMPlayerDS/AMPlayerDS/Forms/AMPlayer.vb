@@ -8,6 +8,7 @@ Public Class AMPlayer
 
     Private clsVis As clsVisualization
     Private clsMagnet As MagnetizeMe
+    Private clsTaskbar As TaskbarButtons
 
     Public PlaylistList As New List(Of StreamInformations)
 
@@ -81,6 +82,14 @@ Public Class AMPlayer
         ' Magnetize main form
         clsMagnet = New MagnetizeMe(Me)
 
+        ' Add buttons
+        clsTaskbar = New TaskbarButtons(Me.Handle)
+        clsTaskbar.AddButton("Previous", My.Resources.prev, New TaskbarButtons.ButtonClick(AddressOf PreviousItemHelper))
+        clsTaskbar.AddButton("Play", My.Resources.play, New TaskbarButtons.ButtonClick(AddressOf PlayHelper))
+        clsTaskbar.AddButton("Pause", My.Resources.pause, New TaskbarButtons.ButtonClick(AddressOf PauseHelper))
+        clsTaskbar.AddButton("Stop", My.Resources._stop, New TaskbarButtons.ButtonClick(AddressOf StopHelper))
+        clsTaskbar.AddButton("Next", My.Resources._next, New TaskbarButtons.ButtonClick(AddressOf NextItemHelper))
+
         ' Check if there are some pending params to process
         If bLoadingParamsPending = True Then
 
@@ -95,6 +104,12 @@ Public Class AMPlayer
                 Invoke(UpdatePlaylistEntry, Decoder.CurrentFileStreamInfo, 0)
             End If
         End If
+    End Sub
+
+    Private Sub AMPlayer_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+
+        ' Update taskbar only when main window is visible
+        clsTaskbar.UpdateTaskbar()
     End Sub
 
     Private Sub Form1_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
@@ -962,11 +977,6 @@ Public Class AMPlayer
         DebugPrintLine("AMPlayer", "Message recived: " & data.Path)
 #End If
     End Sub
-
-
-
-
-
 
 #End Region
 End Class
