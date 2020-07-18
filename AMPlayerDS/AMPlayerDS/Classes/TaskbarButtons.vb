@@ -46,7 +46,7 @@ Public Class TaskbarButtons
     End Enum
 
 
-    <StructLayout(LayoutKind.Sequential, Pack:=4, CharSet:=CharSet.Auto)>
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto)>
     Private Structure THUMBBUTTON
         <MarshalAs(UnmanagedType.U4)>
         Public dwMask As THUMBBUTTONMASK ' A combination of THUMBBUTTONMASK values that specify which members of this structure contain valid data
