@@ -438,9 +438,10 @@ Public Class AMPlayer
             Exit Sub
         End If
 
+        ' Removeselected elements
         For i As Integer = 0 To selectedItems.Count - 1
-            Playlist.RemoveRow(selectedItems(i))
-            PlaylistList.RemoveAt(selectedItems(i))
+            Playlist.RemoveRow(selectedItems(i) - i)
+            PlaylistList.RemoveAt(selectedItems(i) - i)
         Next
 
         ' Draw playlist and update scrollbars

@@ -16,6 +16,10 @@
 ' Fixed some row text clipping
 ' Fixed problem With incorrect text cutting On some lines
 
+' 0.04
+' Added CTRL gesture
+' Solved minor bugs
+
 Public Class CustomListViewControl
 
     ' Rows data collection
@@ -218,31 +222,29 @@ Public Class CustomListViewControl
         nEndIndex = nStartIndex + VisibleRows()
         nRowYCoord = 0
 
-        ' Clear all state
-        For i As Integer = 0 To RowsArray.Count - 1
-            RowsArray(i).IsSelected = False
-        Next
+        ' Clear all state if ctrl is not pressed, otherwise select more 
+        ' elements
+        If My.Computer.Keyboard.CtrlKeyDown = False Then
+            For i As Integer = 0 To RowsArray.Count - 1
+                RowsArray(i).IsSelected = False
+            Next
+        End If
 
         ' In visible rows check where mouse is down
         For i As Integer = nStartIndex To nEndIndex - 1
-            With rect
-                .X = 0
-                .Width = PictureBox_List.Width
-                .Y = nRowYCoord
-                .Height = RowHeightProperty
-            End With
+                With rect
+                    .X = 0
+                    .Width = PictureBox_List.Width
+                    .Y = nRowYCoord
+                    .Height = RowHeightProperty
+                End With
 
-            If (mouse.Y > rect.Top) And (mouse.Y < rect.Bottom) Then
-
-                ' Only left button allowed
-                If e.Button = MouseButtons.Left Then
+                If (mouse.Y > rect.Top) And (mouse.Y < rect.Bottom) Then
                     RowsArray(i).IsSelected = True
                 End If
 
-            End If
-
-            nRowYCoord = nRowYCoord + RowHeightProperty
-        Next
+                nRowYCoord = nRowYCoord + RowHeightProperty
+            Next
 
         ' Update graphics
         PaintData()
@@ -909,7 +911,7 @@ Public Class CustomListViewControl
     ''' <param name="index">Index of row to delete</param>
     Public Sub RemoveRow(ByVal index As Int32)
 
-        If (index <= ColumnsArray.Count) And (index >= 0) Then
+        If (index <= RowsArray.Count) And (index >= 0) Then
             RowsArray.RemoveAt(index)
         End If
 
