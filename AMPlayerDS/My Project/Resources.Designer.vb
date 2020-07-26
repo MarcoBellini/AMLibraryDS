@@ -61,12 +61,52 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
+        '''  Cerca una risorsa localizzata di tipo System.Drawing.Icon simile a (Icona).
         '''</summary>
-        Friend ReadOnly Property appbar_control_eject() As System.Drawing.Bitmap
+        Friend ReadOnly Property _next() As System.Drawing.Icon
             Get
-                Dim obj As Object = ResourceManager.GetObject("appbar.control.eject", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
+                Dim obj As Object = ResourceManager.GetObject("_next", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Cerca una risorsa localizzata di tipo System.Drawing.Icon simile a (Icona).
+        '''</summary>
+        Friend ReadOnly Property _stop() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("_stop", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Cerca una risorsa localizzata di tipo System.Drawing.Icon simile a (Icona).
+        '''</summary>
+        Friend ReadOnly Property pause() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("pause", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Cerca una risorsa localizzata di tipo System.Drawing.Icon simile a (Icona).
+        '''</summary>
+        Friend ReadOnly Property play() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("play", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Cerca una risorsa localizzata di tipo System.Drawing.Icon simile a (Icona).
+        '''</summary>
+        Friend ReadOnly Property prev() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("prev", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
             End Get
         End Property
     End Module

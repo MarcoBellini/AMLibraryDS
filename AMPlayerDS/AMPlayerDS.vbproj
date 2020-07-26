@@ -186,6 +186,7 @@
     <Compile Include="AMPlayerDS\Classes\SingleInstanceFramework\InterprocessSender.vb" />
     <Compile Include="AMPlayerDS\Classes\SingleInstanceFramework\InterprocessTransferData.vb" />
     <Compile Include="AMPlayerDS\Classes\SingleInstanceFramework\InterprocessWinapi.vb" />
+    <Compile Include="AMPlayerDS\Classes\TaskbarButtons.vb" />
     <Compile Include="AMPlayerDS\Edited Controls\CustomListView.designer.vb">
       <DependentUpon>CustomListView.vb</DependentUpon>
     </Compile>
@@ -348,6 +349,11 @@
     <Content Include="CompiledDLL\x86\opusfile.dll" />
     <Content Include="CompiledDLL\x86\ssleay32.dll" />
     <None Include="images\appbar.control.eject.png" />
+    <None Include="images\play.ico" />
+    <None Include="images\next.ico" />
+    <None Include="images\pause.ico" />
+    <None Include="images\prev.ico" />
+    <None Include="images\stop.ico" />
     <Content Include="logoNewIco.ico" />
   </ItemGroup>
   <ItemGroup>

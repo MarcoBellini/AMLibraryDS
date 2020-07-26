@@ -326,7 +326,7 @@ Partial Class AMPlayer
         'AboutToolStripMenuItem
         '
         Me.AboutToolStripMenuItem.Name = "AboutToolStripMenuItem"
-        Me.AboutToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.AboutToolStripMenuItem.Size = New System.Drawing.Size(107, 22)
         Me.AboutToolStripMenuItem.Text = "About"
         '
         'TopToolstrip
@@ -502,9 +502,9 @@ Partial Class AMPlayer
         Me.Playlist.BackColor = System.Drawing.SystemColors.Control
         Me.Playlist.BackgroundColorProperty = System.Drawing.Color.DarkSeaGreen
         Me.Playlist.ContextMenuStrip = Me.PlaylistMenuStrip
-        Me.Playlist.HighlightItemColorProperty = System.Drawing.Color.NavajoWhite
+        Me.Playlist.HighlightItemColorProperty = System.Drawing.Color.MediumSpringGreen
         Me.Playlist.ItemColorProperty = System.Drawing.Color.DarkSeaGreen
-        Me.Playlist.ItemFontProperty = New System.Drawing.Font("Arial Narrow", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Playlist.ItemFontProperty = New System.Drawing.Font("Arial", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Playlist.ItemTextColorProperty = System.Drawing.Color.Black
         Me.Playlist.Location = New System.Drawing.Point(1, 52)
         Me.Playlist.Name = "Playlist"
