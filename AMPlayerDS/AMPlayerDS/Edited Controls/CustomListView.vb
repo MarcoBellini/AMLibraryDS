@@ -232,19 +232,19 @@ Public Class CustomListViewControl
 
         ' In visible rows check where mouse is down
         For i As Integer = nStartIndex To nEndIndex - 1
-                With rect
-                    .X = 0
-                    .Width = PictureBox_List.Width
-                    .Y = nRowYCoord
-                    .Height = RowHeightProperty
-                End With
+            With rect
+                .X = 0
+                .Width = PictureBox_List.Width
+                .Y = nRowYCoord
+                .Height = RowHeightProperty
+            End With
 
-                If (mouse.Y > rect.Top) And (mouse.Y < rect.Bottom) Then
-                    RowsArray(i).IsSelected = True
-                End If
+            If (mouse.Y > rect.Top) And (mouse.Y < rect.Bottom) Then
+                RowsArray(i).IsSelected = True
+            End If
 
-                nRowYCoord = nRowYCoord + RowHeightProperty
-            Next
+            nRowYCoord = nRowYCoord + RowHeightProperty
+        Next
 
         ' Update graphics
         PaintData()

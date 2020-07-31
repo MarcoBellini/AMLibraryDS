@@ -827,9 +827,11 @@ Public Class AMPlayer
             Playlist.ClearHighlight()
             Playlist.HighlightItem(nCurrentPlayIndex)
             Playlist.UpdateRowGraphics()
+            Playlist.UpdateScrollbars()
         Else
             Playlist.ClearHighlight()
             Playlist.UpdateRowGraphics()
+            Playlist.UpdateScrollbars()
         End If
     End Sub
 
