@@ -440,9 +440,7 @@ Public Class WaveOutOutput
 
         StrBlt.AppendLine("<<" + Name + ">>")
         StrBlt.AppendLine(" ")
-        StrBlt.AppendLine("Developed by Marco Bellini")
-        StrBlt.AppendLine("Mail: marco.bellini8@gmail.com")
-        StrBlt.AppendLine("Year: 2020")
+        StrBlt.AppendLine("Output plugin based on WaveOut API")
 
         MsgBox(StrBlt.ToString)
     End Sub

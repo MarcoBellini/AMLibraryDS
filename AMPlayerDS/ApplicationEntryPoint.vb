@@ -4,9 +4,9 @@
 ''' This allow to Run application in MTAThread instead of
 ''' STAThread select by VB.NET by Default
 ''' 
-''' In DEBUG mode show console application to easy debug app
+''' In DEBUG mode Visual Studio console show diagostics messages
 ''' 
-''' In RELEASE mode the console window is hidden
+''' In RELEASE mode is for performance
 ''' </summary>
 Module ApplicationEntryPoint
 

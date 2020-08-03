@@ -341,11 +341,11 @@
     <Content Include="CompiledDLL\x86\libeay32.dll" />
     <Content Include="CompiledDLL\x86\libmp3lame.dll" />
     <Content Include="CompiledDLL\x86\libmpg123.dll" />
-    <Content Include="CompiledDLL\x86\libogg-0.dll" />
-    <Content Include="CompiledDLL\x86\libopus-0.dll" />
     <Content Include="CompiledDLL\x86\libsamplerate.dll" />
     <Content Include="CompiledDLL\x86\libvorbis.dll" />
     <Content Include="CompiledDLL\x86\libvorbisfile.dll" />
+    <Content Include="CompiledDLL\x86\ogg.dll" />
+    <Content Include="CompiledDLL\x86\opus.dll" />
     <Content Include="CompiledDLL\x86\opusfile.dll" />
     <Content Include="CompiledDLL\x86\ssleay32.dll" />
     <None Include="images\appbar.control.eject.png" />
