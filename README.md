@@ -1,4 +1,4 @@
-# AMLibraryDS
+# AMPlayerDS
 AMPlayerDS is an audio player written entirely in **Visual Basic .NET** and based on the .NET Framework and WinForms
 
 ![AMPLayer Demo](main.gif)
