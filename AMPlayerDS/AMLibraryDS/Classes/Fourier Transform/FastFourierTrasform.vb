@@ -56,6 +56,8 @@
 
         Dim i, rev As Integer
 
+        rev = 0
+
         For i = 0 To NumBits - 1
             rev = (rev + rev) Or (Index And 1)
             Index = Index \ 2
@@ -174,7 +176,7 @@
     End Function
 
     Public Function FFTGetMagnitudeDB(ByRef Sample As Complex) As Double
-        Return 10 * Math.Log10(FFTGetMagnitude(Sample))
+        Return 20 * Math.Log10(FFTGetMagnitude(Sample))
     End Function
 
     Private Function FFTCreateWindow(ByVal wnd As Window, ByVal intSamples As SampleSize) As Double()
@@ -187,7 +189,7 @@
             Case Window.FFT_Wnd_Hann
                 ' von-Hann Window
                 For i = 0 To intSamples - 1
-                    dblWnd(i) = 0.5 * (1 + Math.Cos((2 * Math.PI * i) / (intSamples - 1)))
+                    dblWnd(i) = 0.5 * (1 - Math.Cos((2 * Math.PI * i) / (intSamples - 1)))
                 Next
 
             Case Window.FFT_Wnd_Hamming

@@ -13,7 +13,7 @@ Public Class StreamOGG
     ' Select Dll based on compile settings
 #If PLATFORM = "x86" Then
     Private Const VORBIS_DLL As String = "x86\libvorbis.dll"
-    Private Const VF_DLL As String = "x32\libvorbisfile.dll"
+    Private Const VF_DLL As String = "x86\libvorbisfile.dll"
 #ElseIf PLATFORM = "x64" Then
     Private Const VORBIS_DLL As String = "x64\libvorbis.dll"
     Private Const VF_DLL As String = "x64\libvorbisfile.dll"

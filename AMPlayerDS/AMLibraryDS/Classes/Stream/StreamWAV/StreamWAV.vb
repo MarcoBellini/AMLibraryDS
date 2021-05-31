@@ -153,7 +153,7 @@ Public Class StreamWAV
                    (buffer(2) = &H56) And (buffer(3) = &H45) Then
 
                     ' (4) Subchunk1ID
-                    '     -> Offset 12, Size: 4
+                    '     -> Offset 8, Size: 4
                     Reader.Read(buffer, 0, 4)
 
                     'Check if contains Ascii code  0x666d7420  "f""m""t"

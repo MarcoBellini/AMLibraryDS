@@ -430,7 +430,7 @@ Partial Class AMPlayer
         Me.PositionTrackbar.BackColor = System.Drawing.SystemColors.Control
         Me.PositionTrackbar.EmptyTrackColor = System.Drawing.Color.DarkOliveGreen
         Me.PositionTrackbar.ForeColor = System.Drawing.SystemColors.Desktop
-        Me.PositionTrackbar.KeyChangeOption = Winamp.Components.WinampTrackBar.WinampTrackBarKeyChangeOption.NoKeyChange
+        Me.PositionTrackbar.KeyChangeOption = Winamp.Components.WinampTrackBar.WinampTrackBarKeyChangeOption.LeftAndRightArrowKeys
         Me.PositionTrackbar.Location = New System.Drawing.Point(12, 328)
         Me.PositionTrackbar.Name = "PositionTrackbar"
         Me.PositionTrackbar.ScaleType = Winamp.Components.WinampTrackBar.WinampTrackBarScaleType.None
