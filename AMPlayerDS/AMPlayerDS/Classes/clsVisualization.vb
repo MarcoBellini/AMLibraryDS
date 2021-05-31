@@ -1,9 +1,9 @@
 ﻿Public Class clsVisualization
     Implements IDisposable
 
-    Private Const CUSTOM_SCALE_FACTOR As Integer = 1500
+    ' Private Const CUSTOM_SCALE_FACTOR As Integer = 15
     Private Const NUMBER_OF_BARS As Integer = 20
-    Private Const DECREASING_BAR_VALUE As Double = 2.5#
+    Private Const DECREASING_BAR_VALUE As Double = 1.5#
     Private Const DECREASING_PEAK_VALUE As Double = 3.0#
     Private Const WAIT_DECREASING_PEAK_VALUE As Double = 3.0#
 
@@ -17,11 +17,11 @@
 
     ' At 44100hz samplerate remebrer: 1= 85 hz and 256=22050
     ' Human range value is from 30hz to 11000hz
-    Private frequency() As Integer = {1, 5, 7, 10, 15, 18, 20, 23, 25, 30, 35, 40, 45, 50, 60, 80, 90, 100, 110, 127}
+    Private frequency() As Integer = {1, 5, 7, 9, 12, 15, 18, 21, 25, 28, 33, 38, 41, 43, 46, 50, 55, 60, 85, 95}
 
     ' Multiply Each band to Loud high frequecies. This allow to 
     ' draw a well shaped spectrums
-    Private gain() As Single = {0.2, 0.25, 0.4, 0.5, 0.7, 0.8, 0.9, 1.1, 1.2, 1.5, 1.5, 1.7, 2.0, 2.5, 3.0, 3.0, 3.5, 3.5, 4.0, 4.0}
+    'Private gain() As Single = {0.6, 0.8, 1, 1.2, 1.4, 2, 2.3, 2.6, 3, 3.5, 4, 4.5, 5, 5.5, 6, 7, 7, 7, 7, 8}
 
     Private bars(NUMBER_OF_BARS - 1) As VisualizationBar
 
@@ -68,11 +68,11 @@
         For i As Integer = 0 To NUMBER_OF_BARS - 1
 
             ' calculate averange of frequency and return abs value
-            value = AvgFrequency(data, prevIndex, bars(i).nIndex)
+            value = AvgFrequency(data, prevIndex, bars(i).nIndex) 
             prevIndex = bars(i).nIndex
 
             ' Multiply by a custom factor to scale input to picturebox height
-            value = value * CUSTOM_SCALE_FACTOR * gain(i)
+            value = value / 35 * pPictueBox.Height
 
             ' Clip values to fit in the picture box
             If value > pPictueBox.Height Then
@@ -146,7 +146,7 @@
 
         ' Sum values
         For i As Integer = nStartIndex To nEndIndex - 1
-            result = result + Math.Abs(buffer(i))
+            result = result + buffer(i)
         Next
 
         ' Calculate Avg

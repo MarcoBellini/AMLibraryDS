@@ -293,7 +293,7 @@ Public Class DecoderManager
 
         ' Init Class
         If bFftInit = False Then
-            clsFFT.Init(intFFTSize, FastFourierTrasform.Window.FFT_Wnd_Hann)
+            clsFFT.Init(intFFTSize, FastFourierTrasform.Window.FFT_Wnd_Hamming)
             bFftInit = True
         End If
 
@@ -313,12 +313,16 @@ Public Class DecoderManager
                     complexSamples(i).im = 0
                 Next
 
-                clsFFT.FFT(complexSamples, True)
+
+                clsFFT.FFT(complexSamples, False)
+
 
                 ' Get magnitude of frequencies
                 For i As Integer = 0 To intFFTSize - 1
-                    OutSamples(i) = clsFFT.FFTGetMagnitude(complexSamples(i))
+                    OutSamples(i) = clsFFT.FFTGetMagnitudeDB(complexSamples(i))
                 Next
+
+
 
             Else
                 Array.Clear(OutSamples, 0, OutSamples.Length)
